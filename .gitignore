@@ -121,3 +121,5 @@ migrations/
 
 # Pytest
 .pytest_cache/
+
+db.sqlite3
