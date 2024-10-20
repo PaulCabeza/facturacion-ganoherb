@@ -3,6 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+    success_url = reverse_lazy('inventory:index')
+
 @login_required
 def index(request):
     return render(request, 'inventory/index.html')
@@ -26,7 +30,3 @@ def invoice_list(request):
 def create_invoice(request):
     # Implement create invoice view
     pass
-
-class CustomLoginView(LoginView):
-    template_name = 'registration/login.html'
-    success_url = reverse_lazy('inventory:index')

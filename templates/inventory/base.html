@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Inventory and Billing System{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
         input[type="text"], input[type="password"], input[type="email"] {
             @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline;
         }
     </style>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body class="bg-gray-100">
     <nav class="bg-blue-600 text-white p-4">
@@ -21,7 +21,10 @@
                     <a href="{% url 'inventory:product_list' %}" class="mr-4">Products</a>
                     <a href="{% url 'inventory:customer_list' %}" class="mr-4">Customers</a>
                     <a href="{% url 'inventory:invoice_list' %}" class="mr-4">Invoices</a>
-                    <a href="{% url 'logout' %}">Log out</a>
+                    <form method="post" action="{% url 'logout' %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="text-white">Log out</button>
+                    </form>
                 {% else %}
                     <a href="{% url 'login' %}">Log in</a>
                 {% endif %}

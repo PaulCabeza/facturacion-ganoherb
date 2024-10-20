@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from django.contrib.auth.views import LogoutView
 from inventory.views import CustomLoginView
 
 urlpatterns = [
@@ -24,5 +25,6 @@ urlpatterns = [
     path('inventory/', include('inventory.urls')),
     path('accounts/login/', CustomLoginView.as_view(), name='login'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('', RedirectView.as_view(url='/inventory/', permanent=True)),
 ]
