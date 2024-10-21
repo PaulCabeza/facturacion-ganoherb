@@ -1,23 +1,23 @@
 {% extends "inventory/base.html" %}
 
-{% block title %}Dashboard - Inventory and Billing System{% endblock %}
+{% block title %}Panel de Control - Sistema de Inventario y Facturación{% endblock %}
 
 {% block content %}
 <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <h1 class="text-2xl font-bold mb-4">Welcome to the Inventory and Billing System</h1>
-    <p class="mb-4">Here's a quick overview of your system:</p>
+    <h1 class="text-2xl font-bold mb-4">Bienvenido al Sistema de Inventario y Facturación</h1>
+    <p class="mb-4">Aquí tienes un resumen rápido de tu sistema:</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-blue-100 p-4 rounded">
-            <h2 class="font-bold">Products</h2>
+            <h2 class="font-bold">Productos</h2>
             <p>Total: <b>{{ total_products }}</b></p>
         </div>
         <div class="bg-green-100 p-4 rounded">
-            <h2 class="font-bold">Customers</h2>
-            <p>Total: [Customer Count]</p>
+            <h2 class="font-bold">Clientes</h2>
+            <p>Total: [Cantidad de Clientes]</p>
         </div>
         <div class="bg-yellow-100 p-4 rounded">
-            <h2 class="font-bold">Invoices</h2>
-            <p>Total: [Invoice Count]</p>
+            <h2 class="font-bold">Facturas</h2>
+            <p>Total: [Cantidad de Facturas]</p>
         </div>
     </div>
 </div>
