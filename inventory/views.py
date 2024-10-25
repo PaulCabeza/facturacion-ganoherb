@@ -40,6 +40,19 @@ def distributor_list(request):
     distributors = Distributor.objects.all()
     return render(request, 'inventory/distributor_list.html', {'distributors': distributors})
 
+
+@login_required
+def distributor_create(request):
+    pass
+
+@login_required
+def distributor_update(request, pk):
+    pass
+
+@login_required
+def distributor_delete(request, pk):
+    pass
+
 @login_required
 def invoice_list(request):
     invoices = Invoice.objects.all()
