@@ -14,19 +14,21 @@
 <table class="min-w-full bg-white text-center">
     <thead>
         <tr>
-            <th class="py-2 px-4 border-b">Name</th>
-            <th class="py-2 px-4 border-b">Description</th>
-            <th class="py-2 px-4 border-b">Price</th>
-            <th class="py-2 px-4 border-b">Quantity</th>
-            <th class="py-2 px-4 border-b">Actions</th>
+            <th class="py-2 px-4 border-b">Producto</th>
+            <th class="py-2 px-4 border-b">Sobres por caja</th>
+            <th class="py-2 px-4 border-b">Precio distribuidor</th>
+            <th class="py-2 px-4 border-b">Precio al público</th>
+            <th class="py-2 px-4 border-b">Cantidad</th>
+            <th class="py-2 px-4 border-b">Acciones</th>
         </tr>
     </thead>
     <tbody>
         {% for product in products %}
         <tr>
             <td class="py-2 px-4 border-b">{{ product.name }}</td>
-            <td class="py-2 px-4 border-b">{{ product.description }}</td>
-            <td class="py-2 px-4 border-b">${{ product.price }}</td>
+            <td class="py-2 px-4 border-b">{{ product.units_per_box }}</td>
+            <td class="py-2 px-4 border-b">${{ product.distributor_price }}</td>
+            <td class="py-2 px-4 border-b">${{ product.public_price }}</td>
             <td class="py-2 px-4 border-b">{{ product.quantity }}</td>
             <td class="py-2 px-4 border-b">
                 <a href="{% url 'inventory:product_update' product.id %}" class="text-blue-500 hover:text-blue-700">Edit</a>

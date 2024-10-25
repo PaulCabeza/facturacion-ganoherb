@@ -2,9 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Product(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    name = models.CharField(max_length=200)    
+    units_per_box = models.IntegerField()
+    distributor_price = models.DecimalField(max_digits=10, decimal_places=2)
+    public_price = models.DecimalField(max_digits=10, decimal_places=2)    
     quantity = models.IntegerField()
 
     def __str__(self):

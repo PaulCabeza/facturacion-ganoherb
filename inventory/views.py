@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from .models import Product, Customer, Invoice
-from .forms import ProductForm  # Necesitarás crear este formulario
+from .forms import ProductForm
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
