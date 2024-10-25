@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from .models import Product, Distributor, Invoice
-from .forms import ProductForm
+from .forms import ProductForm, DistributorForm
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
@@ -43,11 +43,26 @@ def distributor_list(request):
 
 @login_required
 def distributor_create(request):
-    pass
+    if request.method == 'POST':
+        form = DistributorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('inventory:distributor_list')
+    else:
+        form = DistributorForm()
+    return render(request, 'inventory/distributor_form.html', {'form': form})
 
 @login_required
 def distributor_update(request, pk):
-    pass
+    distributor = get_object_or_404(Distributor, pk=pk)
+    if request.method == 'POST':
+        form = DistributorForm(request.POST, instance=distributor)
+        if form.is_valid():
+            form.save()
+            return redirect('inventory:distributor_list')
+    else:
+        form = DistributorForm(instance=distributor)
+    return render(request, 'inventory/distributor_form.html', {'form': form, 'distributor': distributor})
 
 @login_required
 def distributor_delete(request, pk):

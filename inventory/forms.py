@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product
+from .models import Product, Distributor
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -11,4 +11,17 @@ class ProductForm(forms.ModelForm):
             'distributor_price': 'Precio distribuidor',
             'public_price': 'Precio al público',
             'quantity': 'Cantidad',
+        }
+
+
+class DistributorForm(forms.ModelForm):
+    class Meta:
+        model = Distributor
+        fields = ['name', 'nit', 'phone', 'email', 'address']
+        labels = {
+            'name': 'Nombre',
+            'nit': 'NIT',
+            'phone': 'Teléfono',
+            'email': 'Correo electrónico',
+            'address': 'Dirección',            
         }
