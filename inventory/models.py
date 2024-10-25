@@ -13,6 +13,7 @@ class Product(models.Model):
 
 class Distributor(models.Model):
     name = models.CharField(max_length=200)
+    code_id = models.CharField(max_length=10, blank=False)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)

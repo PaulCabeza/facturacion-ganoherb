@@ -17,9 +17,10 @@ class ProductForm(forms.ModelForm):
 class DistributorForm(forms.ModelForm):
     class Meta:
         model = Distributor
-        fields = ['name', 'nit', 'phone', 'email', 'address']
+        fields = ['name', 'code_id', 'nit', 'phone', 'email', 'address']
         labels = {
             'name': 'Nombre',
+            'code_id': 'Código de distribuidor',
             'nit': 'NIT',
             'phone': 'Teléfono',
             'email': 'Correo electrónico',
