@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Distributor
+from .models import Product, Distributor, Invoice, InvoiceDetail
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -26,3 +26,16 @@ class DistributorForm(forms.ModelForm):
             'email': 'Correo electrónico',
             'address': 'Dirección',            
         }
+
+class InvoiceForm(forms.ModelForm):
+    class Meta:
+        model = Invoice
+        fields = ['invoice_number', 'customer', 'date']
+        widgets = {
+            'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
+
+class InvoiceDetailForm(forms.ModelForm):
+    class Meta:
+        model = InvoiceDetail
+        fields = ['product', 'quantity', 'unit_price']

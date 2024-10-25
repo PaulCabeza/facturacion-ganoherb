@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
-from .models import Product, Distributor, Invoice
-from .forms import ProductForm, DistributorForm
+from django.forms import inlineformset_factory
+from django.http import JsonResponse
+from .models import Product, Distributor, Invoice, InvoiceDetail
+from .forms import ProductForm, DistributorForm, InvoiceForm, InvoiceDetailForm
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
@@ -70,8 +72,64 @@ def distributor_delete(request, pk):
 
 @login_required
 def invoice_list(request):
-    invoices = Invoice.objects.all()
+    invoices = Invoice.objects.all().order_by('-date')
     return render(request, 'inventory/invoice_list.html', {'invoices': invoices})
+
+@login_required
+def invoice_detail(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    return render(request, 'inventory/invoice_detail.html', {'invoice': invoice})
+
+@login_required
+def invoice_create(request):
+    InvoiceDetailFormSet = inlineformset_factory(Invoice, InvoiceDetail, form=InvoiceDetailForm, extra=1)
+    
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST)
+        formset = InvoiceDetailFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            invoice = form.save()
+            formset.instance = invoice
+            formset.save()
+            return redirect('inventory:invoice_detail', pk=invoice.pk)
+    else:
+        form = InvoiceForm()
+        formset = InvoiceDetailFormSet()
+    
+    return render(request, 'inventory/invoice_form.html', {'form': form, 'formset': formset})
+
+@login_required
+def invoice_update(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    InvoiceDetailFormSet = inlineformset_factory(Invoice, InvoiceDetail, form=InvoiceDetailForm, extra=1)
+    
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST, instance=invoice)
+        formset = InvoiceDetailFormSet(request.POST, instance=invoice)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return redirect('inventory:invoice_detail', pk=invoice.pk)
+    else:
+        form = InvoiceForm(instance=invoice)
+        formset = InvoiceDetailFormSet(instance=invoice)
+    
+    return render(request, 'inventory/invoice_form.html', {'form': form, 'formset': formset, 'invoice': invoice})
+
+@login_required
+def get_distributor_details(request, pk):
+    distributor = get_object_or_404(Distributor, pk=pk)
+    data = {
+        'code_id': distributor.code_id,
+        'address': distributor.address,
+        'phone': distributor.phone,
+    }
+    return JsonResponse(data)
+
+@login_required
+def invoice_print(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk)
+    return render(request, 'inventory/invoice_print.html', {'invoice': invoice})
 
 @login_required
 def product_update(request, pk):
@@ -99,3 +157,4 @@ def product_delete(request, pk):
 
 # def product_delete(request, pk):
 #     pass
+

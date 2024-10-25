@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura #{{ invoice.invoice_number }}</title>
+    <style>
+        @media print {
+            body {
+                margin-top: 5cm;
+                font-family: Arial, sans-serif;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button onclick="window.print()">Imprimir Factura</button>
+    </div>
+
+    <h1>Factura #{{ invoice.invoice_number }}</h1>
+    <p><strong>Fecha:</strong> {{ invoice.date|date:"d/m/Y H:i" }}</p>
+    <p><strong>Distribuidor:</strong> {{ invoice.customer.name }}</p>
+    <p><strong>Código de Distribuidor:</strong> {{ invoice.customer.code_id }}</p>
+    <p><strong>Dirección:</strong> {{ invoice.customer.address }}</p>
+    <p><strong>Teléfono:</strong> {{ invoice.customer.phone }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detail in invoice.details.all %}
+            <tr>
+                <td>{{ detail.product.name }}</td>
+                <td>{{ detail.quantity }}</td>
+                <td>${{ detail.unit_price }}</td>
+                <td>${{ detail.subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><strong>Total:</strong> ${{ invoice.total }}</p>
+</body>
+</html>

@@ -1,0 +1,128 @@
+{% extends 'inventory/base.html' %}
+{% load static %}
+
+{% block title %}{% if invoice %}Editar Factura{% else %}Crear Factura{% endif %}{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <h1 class="text-3xl font-bold mb-6">{% if invoice %}Editar Factura{% else %}Crear Factura{% endif %}</h1>
+    
+    <form method="post" id="invoiceForm">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="invoice_number" class="block text-gray-700 text-sm font-bold mb-2">Número de Factura</label>
+            {{ form.invoice_number }}
+        </div>
+        <div class="mb-4">
+            <label for="date" class="block text-gray-700 text-sm font-bold mb-2">Fecha</label>
+            {{ form.date }}
+        </div>
+        <div class="mb-4">
+            <label for="customer" class="block text-gray-700 text-sm font-bold mb-2">Distribuidor</label>
+            {{ form.customer }}
+        </div>
+        <div id="customerDetails" class="mb-4 hidden">
+            <p><strong>Código:</strong> <span id="customerCode"></span></p>
+            <p><strong>Dirección:</strong> <span id="customerAddress"></span></p>
+            <p><strong>Teléfono:</strong> <span id="customerPhone"></span></p>
+        </div>
+        
+        <h2 class="text-2xl font-bold mb-4">Detalles de la Factura</h2>
+        {{ formset.management_form }}
+        <table class="min-w-full bg-white" id="invoiceDetails">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b">Producto</th>
+                    <th class="py-2 px-4 border-b">Cantidad</th>
+                    <th class="py-2 px-4 border-b">Precio Unitario</th>
+                    <th class="py-2 px-4 border-b">Subtotal</th>
+                    <th class="py-2 px-4 border-b">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceDetailsBody">
+                {% for form in formset %}
+                    <tr class="formset-row">
+                        <td class="py-2 px-4 border-b">{{ form.product }}</td>
+                        <td class="py-2 px-4 border-b">{{ form.quantity }}</td>
+                        <td class="py-2 px-4 border-b">{{ form.unit_price }}</td>
+                        <td class="py-2 px-4 border-b">{{ form.subtotal }}</td>
+                        <td class="py-2 px-4 border-b">
+                            <button type="button" class="text-red-500 hover:text-red-700 delete-row">Eliminar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="button" id="addRow" class="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Agregar Producto
+        </button>
+        
+        <div class="mt-6">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                {% if invoice %}Actualizar Factura{% else %}Crear Factura{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Cargar detalles del distribuidor
+        $('#id_customer').change(function() {
+            var distributorId = $(this).val();
+            if (distributorId) {
+                $.ajax({
+                    url: '/inventory/get_distributor_details/' + distributorId + '/',
+                    type: 'GET',
+                    success: function(data) {
+                        $('#customerCode').text(data.code_id);
+                        $('#customerAddress').text(data.address);
+                        $('#customerPhone').text(data.phone);
+                        $('#customerDetails').removeClass('hidden');
+                    }
+                });
+            } else {
+                $('#customerDetails').addClass('hidden');
+            }
+        });
+
+        // Agregar nueva fila
+        $('#addRow').click(function() {
+            var newRow = $('.formset-row:first').clone(true);
+            newRow.find('input').val('');
+            $('#invoiceDetailsBody').append(newRow);
+            updateFormsetIndex();
+        });
+
+        // Eliminar fila
+        $('.delete-row').click(function() {
+            if ($('.formset-row').length > 1) {
+                $(this).closest('tr').remove();
+                updateFormsetIndex();
+            }
+        });
+
+        // Actualizar índices del formset
+        function updateFormsetIndex() {
+            $('#invoiceDetailsBody tr').each(function(index) {
+                $(this).find('input, select').each(function() {
+                    var name = $(this).attr('name').replace(/\d+/, index);
+                    var id = 'id_' + name;
+                    $(this).attr({'name': name, 'id': id});
+                });
+            });
+            $('#id_form-TOTAL_FORMS').val($('.formset-row').length);
+        }
+
+        // Calcular subtotal
+        $('#invoiceDetailsBody').on('change', '.quantity, .unit_price', function() {
+            var row = $(this).closest('tr');
+            var quantity = parseFloat(row.find('.quantity').val()) || 0;
+            var unitPrice = parseFloat(row.find('.unit_price').val()) || 0;
+            var subtotal = quantity * unitPrice;
+            row.find('.subtotal').val(subtotal.toFixed(2));
+        });
+    });
+</script>
+{% endblock %}

@@ -23,13 +23,14 @@ class Distributor(models.Model):
         return self.name
 
 class Invoice(models.Model):
+    invoice_number = models.CharField(max_length=20, unique=True)
     customer = models.ForeignKey(Distributor, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
     total = models.DecimalField(max_digits=10, decimal_places=2)
     paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Invoice {self.id} - {self.customer.name}"
+        return f"Factura {self.invoice_number} - {self.customer.name}"
 
 class InvoiceDetail(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='details')
