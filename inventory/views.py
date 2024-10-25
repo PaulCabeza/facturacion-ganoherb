@@ -12,8 +12,10 @@ class CustomLoginView(LoginView):
 @login_required
 def index(request):
     total_products = Product.objects.count()
+    products = Product.objects.all()
     context = {
         'total_products': total_products,
+        'products': products,
     }
     return render(request, 'inventory/index.html', context)
 
