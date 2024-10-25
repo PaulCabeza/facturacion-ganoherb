@@ -11,17 +11,18 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class Customer(models.Model):
+class Distributor(models.Model):
     name = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)
+    nit = models.CharField(max_length=20, blank=False)
 
     def __str__(self):
         return self.name
 
 class Invoice(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Distributor, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     paid = models.BooleanField(default=False)

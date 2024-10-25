@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
-from .models import Product, Customer, Invoice
+from .models import Product, Distributor, Invoice
 from .forms import ProductForm
 
 class CustomLoginView(LoginView):
@@ -36,9 +36,9 @@ def product_create(request):
     return render(request, 'inventory/product_form.html', {'form': form})
 
 @login_required
-def customer_list(request):
-    customers = Customer.objects.all()
-    return render(request, 'inventory/customer_list.html', {'customers': customers})
+def distributor_list(request):
+    distributors = Distributor.objects.all()
+    return render(request, 'inventory/distributor_list.html', {'distributors': distributors})
 
 @login_required
 def invoice_list(request):

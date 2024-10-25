@@ -19,7 +19,7 @@
             <div>
                 {% if user.is_authenticated %}
                     <a href="{% url 'inventory:product_list' %}" class="mr-4">Productos</a>
-                    <a href="{% url 'inventory:customer_list' %}" class="mr-4">Clientes</a>
+                    <a href="{% url 'inventory:distributor_list' %}" class="mr-4">Distribuidores</a>
                     <a href="{% url 'inventory:invoice_list' %}" class="mr-4">Facturas</a>
                     <form method="post" action="{% url 'logout' %}" class="inline">
                         {% csrf_token %}
