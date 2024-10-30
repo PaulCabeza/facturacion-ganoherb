@@ -39,5 +39,9 @@ class InvoiceDetail(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def save(self, *args, **kwargs):
+        self.subtotal = self.quantity * self.unit_price
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.product.name} - {self.quantity}"

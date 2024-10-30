@@ -4,6 +4,9 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.forms import inlineformset_factory
 from django.http import JsonResponse
+from django.utils import timezone
+from django.db.models import Sum
+from django.db import transaction
 from .models import Product, Distributor, Invoice, InvoiceDetail
 from .forms import ProductForm, DistributorForm, InvoiceForm, InvoiceDetailForm
 
@@ -81,6 +84,7 @@ def invoice_detail(request, pk):
     return render(request, 'inventory/invoice_detail.html', {'invoice': invoice})
 
 @login_required
+@transaction.atomic
 def invoice_create(request):
     InvoiceDetailFormSet = inlineformset_factory(Invoice, InvoiceDetail, form=InvoiceDetailForm, extra=1)
     
@@ -88,12 +92,21 @@ def invoice_create(request):
         form = InvoiceForm(request.POST)
         formset = InvoiceDetailFormSet(request.POST)
         if form.is_valid() and formset.is_valid():
-            invoice = form.save()
+            invoice = form.save(commit=False)
+            invoice.total = 0  # Inicializamos el total a 0
+            invoice.save()
+            
             formset.instance = invoice
-            formset.save()
-            return redirect('inventory:invoice_detail', pk=invoice.pk)
+            details = formset.save()
+            
+            # Calculamos el total sumando los subtotales de los detalles
+            total = sum(detail.subtotal for detail in details)
+            invoice.total = total
+            invoice.save()
+            
+            return redirect('inventory:invoice_print', pk=invoice.pk)
     else:
-        form = InvoiceForm()
+        form = InvoiceForm(initial={'date': timezone.now()})
         formset = InvoiceDetailFormSet()
     
     return render(request, 'inventory/invoice_form.html', {'form': form, 'formset': formset})
@@ -150,11 +163,3 @@ def product_delete(request, pk):
         product.delete()
         return redirect('inventory:product_list')
     return render(request, 'inventory/product_confirm_delete.html', {'product': product})
-
-# Implementa estas vistas más adelante
-# def product_update(request, pk):
-#     pass
-
-# def product_delete(request, pk):
-#     pass
-
