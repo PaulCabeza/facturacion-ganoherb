@@ -29,6 +29,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['45.33.14.154', 'localhost', '127.0.0.1', 'facturacion-ganoherb.site']
 
+# Add these new settings
+CSRF_TRUSTED_ORIGINS = [
+    'https://facturacion-ganoherb.site',
+    'http://facturacion-ganoherb.site',
+    'http://45.33.14.154',
+]
+
 
 # Application definition
 
