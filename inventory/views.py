@@ -16,12 +16,20 @@ class CustomLoginView(LoginView):
 
 @login_required
 def index(request):
-    total_products = Product.objects.count()
-    products = Product.objects.all()
+    # Obtener los últimos 5 registros de cada modelo
+    products = Product.objects.all().order_by('-id')[:5]
+    distributors = Distributor.objects.all().order_by('-id')[:5]
+    invoices = Invoice.objects.all().order_by('-date')[:5]
+
     context = {
-        'total_products': total_products,
+        'total_products': Product.objects.count(),
+        'total_distributors': Distributor.objects.count(),
+        'total_invoices': Invoice.objects.count(),
         'products': products,
+        'distributors': distributors,
+        'invoices': invoices,
     }
+    
     return render(request, 'inventory/index.html', context)
 
 @login_required
