@@ -4,65 +4,100 @@
 {% block title %}{% if invoice %}Editar Factura{% else %}Crear Factura{% endif %}{% endblock %}
 
 {% block content %}
-<div class="bg-white shadow-md rounded px-4 sm:px-8 pt-6 pb-8 mb-4">
-    <h1 class="text-3xl font-bold mb-6">{% if invoice %}Editar Factura{% else %}Crear Factura{% endif %}</h1>
+<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <h1 class="text-2xl font-bold mb-6">{% if invoice %}Editar Factura{% else %}Crear Factura{% endif %}</h1>
     
     <form method="post" id="invoiceForm">
         {% csrf_token %}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
-                <label for="invoice_number" class="block text-gray-700 text-sm font-bold mb-2">Número de Factura</label>
-                {{ form.invoice_number }}
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="invoice_number">
+                    Número de Factura
+                </label>
+                <input type="text" name="invoice_number" id="invoice_number"
+                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                       value="{{ form.invoice_number.value|default:'' }}"
+                       placeholder="Número de Factura">
             </div>
             <div>
-                <label for="date" class="block text-gray-700 text-sm font-bold mb-2">Fecha</label>
-                {{ form.date }}
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="date">
+                    Fecha
+                </label>
+                <input type="datetime-local" name="date" id="date"
+                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                       value="{{ form.date.value|date:'Y-m-d\TH:i'|default:'' }}">
             </div>
             <div>
-                <label for="customer" class="block text-gray-700 text-sm font-bold mb-2">Distribuidor</label>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="customer">
+                    Distribuidor
+                </label>
                 {{ form.customer }}
             </div>
         </div>
-        <div id="customerDetails" class="mb-4 hidden">
-            <p><strong>Código:</strong> <span id="customerCode"></span></p>
-            <p><strong>Dirección:</strong> <span id="customerAddress"></span></p>
-            <p><strong>Teléfono:</strong> <span id="customerPhone"></span></p>
+
+        <div id="customerDetails" class="bg-gray-50 p-4 rounded mb-6 hidden">
+            <h2 class="font-bold text-lg mb-2">Detalles del Distribuidor</h2>
+            <p><span class="font-semibold">Código:</span> <span id="customerCode"></span></p>
+            <p><span class="font-semibold">Dirección:</span> <span id="customerAddress"></span></p>
+            <p><span class="font-semibold">Teléfono:</span> <span id="customerPhone"></span></p>
         </div>
         
-        <h2 class="text-2xl font-bold mb-4">Detalles de la Factura</h2>
+        <h2 class="text-xl font-bold mb-4">Detalles de la Factura</h2>
         {{ formset.management_form }}
         <div class="overflow-x-auto">
-            <table class="min-w-full bg-white" id="invoiceDetails">
-                <thead>
+            <table class="min-w-full bg-white mb-4" id="invoiceDetails">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class="py-2 px-4 border-b">Producto</th>
-                        <th class="py-2 px-4 border-b">Cantidad</th>
-                        <th class="py-2 px-4 border-b">Precio Unitario</th>
-                        <th class="py-2 px-4 border-b">Subtotal</th>
-                        <th class="py-2 px-4 border-b">Acciones</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="invoiceDetailsBody">
                     {% for form in formset %}
                         <tr class="formset-row">
-                            <td class="py-2 px-4 border-b">{{ form.product }}</td>
-                            <td class="py-2 px-4 border-b text-center">{{ form.quantity }}</td>
-                            <td class="py-2 px-4 border-b text-center">$ {{ form.unit_price }}</td>
-                            <td class="py-2 px-4 border-b text-center">$ {{ form.subtotal }}</td>
-                            <td class="py-2 px-4 border-b text-center">
-                                <button type="button" class="text-red-500 hover:text-red-700 delete-row">Eliminar</button>
+                            <td class="px-6 py-4">{{ form.product }}</td>
+                            <td class="px-6 py-4">
+                                <input type="number" name="{{ form.quantity.html_name }}" 
+                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                                       value="{{ form.quantity.value|default:'' }}"
+                                       min="1">
+                            </td>
+                            <td class="px-6 py-4">
+                                <input type="number" name="{{ form.unit_price.html_name }}" 
+                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                                       value="{{ form.unit_price.value|default:'' }}"
+                                       step="0.01">
+                            </td>
+                            <td class="px-6 py-4">
+                                <input type="number" name="{{ form.subtotal.html_name }}" 
+                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                                       value="{{ form.subtotal.value|default:'' }}"
+                                       readonly>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button type="button" class="text-red-600 hover:text-red-900 delete-row">Eliminar</button>
                             </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <button type="button" id="addRow" class="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+
+        <button type="button" id="addRow" 
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-6">
             Agregar Producto
         </button>
         
-        <div class="mt-6">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <div class="flex justify-end gap-4">
+            <a href="{% url 'inventory:invoice_list' %}" 
+               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                Cancelar
+            </a>
+            <button type="submit" 
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                 {% if invoice %}Actualizar Factura{% else %}Guardar Factura{% endif %}
             </button>
         </div>

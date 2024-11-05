@@ -4,59 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factura #{{ invoice.invoice_number }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
-            body {
-                margin-top: 5cm;
-                font-family: Arial, sans-serif;
-            }
             .no-print {
                 display: none;
             }
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 5px;
+            body {
+                margin: 0;
+                padding: 2cm;
+            }
         }
     </style>
 </head>
-<body>
-    <div class="no-print">
-        <button onclick="window.print()">Imprimir Factura</button>
+<body class="bg-white">
+    <div class="no-print mb-4">
+        <button onclick="window.print()" 
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Imprimir Factura
+        </button>
     </div>
 
-    <h1>Factura #{{ invoice.invoice_number }}</h1>
-    <p><strong>Fecha:</strong> {{ invoice.date|date:"d/m/Y H:i" }}</p>
-    <p><strong>Distribuidor:</strong> {{ invoice.customer.name }}</p>
-    <p><strong>Código de Distribuidor:</strong> {{ invoice.customer.code_id }}</p>
-    <p><strong>Dirección:</strong> {{ invoice.customer.address }}</p>
-    <p><strong>Teléfono:</strong> {{ invoice.customer.phone }}</p>
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold">GANOHERB El Salvador</h1>
+            <p class="text-gray-600">Factura de Venta</p>
+        </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for detail in invoice.details.all %}
-            <tr>
-                <td>{{ detail.product.name }}</td>
-                <td>{{ detail.quantity }}</td>
-                <td>${{ detail.unit_price }}</td>
-                <td>${{ detail.subtotal }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <div>
+                <h2 class="font-bold text-lg mb-2">Información del Distribuidor</h2>
+                <p><span class="font-semibold">Nombre:</span> {{ invoice.customer.name }}</p>
+                <p><span class="font-semibold">Código:</span> {{ invoice.customer.code_id }}</p>
+                <p><span class="font-semibold">Dirección:</span> {{ invoice.customer.address }}</p>
+                <p><span class="font-semibold">Teléfono:</span> {{ invoice.customer.phone }}</p>
+            </div>
+            <div>
+                <h2 class="font-bold text-lg mb-2">Información de la Factura</h2>
+                <p><span class="font-semibold">Número:</span> {{ invoice.invoice_number }}</p>
+                <p><span class="font-semibold">Fecha:</span> {{ invoice.date|date:"d/m/Y H:i" }}</p>
+            </div>
+        </div>
 
-    <p><strong>Total:</strong> ${{ invoice.total }}</p>
+        <table class="min-w-full border border-gray-200 mb-8">
+            <thead>
+                <tr class="bg-gray-50">
+                    <th class="border px-4 py-2">Producto</th>
+                    <th class="border px-4 py-2">Cantidad</th>
+                    <th class="border px-4 py-2">Precio Unitario</th>
+                    <th class="border px-4 py-2">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detail in invoice.details.all %}
+                <tr>
+                    <td class="border px-4 py-2">{{ detail.product.name }}</td>
+                    <td class="border px-4 py-2 text-center">{{ detail.quantity }}</td>
+                    <td class="border px-4 py-2 text-right">${{ detail.unit_price }}</td>
+                    <td class="border px-4 py-2 text-right">${{ detail.subtotal }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="font-bold">
+                    <td colspan="3" class="border px-4 py-2 text-right">Total:</td>
+                    <td class="border px-4 py-2 text-right">${{ invoice.total }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-16 grid grid-cols-2 gap-8">
+            <div class="text-center">
+                <div class="border-t border-gray-400 w-48 mx-auto"></div>
+                <p class="mt-2">Firma del Cliente</p>
+            </div>
+            <div class="text-center">
+                <div class="border-t border-gray-400 w-48 mx-auto"></div>
+                <p class="mt-2">Firma Autorizada</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
