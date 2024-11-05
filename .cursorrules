@@ -1,0 +1,28 @@
+# system specs
+CPU Core: 1
+Storage: 25 GB
+RAM: 1 GB
+Volumes: 0
+IP address: 45.33.14.154
+Region: US, Dallas, TX
+Disk: Ubuntu 24.04 LTS
+Swap Image: 512 MB
+
+# editor
+- Only use command line for editing or creating files (no GUI editors like vim, nano, etc.)
+
+# web server
+- nginx
+- Auto accept new packages
+
+# git config
+- user.name: "Paul Cabeza"
+- user.email: "paulcabezadev@gmail.com"
+- github.username: "paulcabeza"
+- github.repo.name: "facturacion-ganoherb"
+- github.repo.url: "https://github.com/PaulCabeza/facturacion-ganoherb"
+
+# project
+- Root directory: /opt/projects/facturacion-ganoherb
+- Runtime: Python 3.12
+- Python environment: venv at /opt/projects/facturacion-ganoherb/venv

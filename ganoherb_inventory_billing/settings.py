@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-)oc#m-^9e^%ze3&)l^&!wc8bcx5xx)9)(h3esml%enunhas7j0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['45.33.14.154', 'localhost', '127.0.0.1', 'facturacion-ganoherb.site']
 
 
 # Application definition
