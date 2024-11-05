@@ -1,212 +1,48 @@
 [
     {
-        "model": "inventory.distribuidor",
+        "model": "inventory.Distributor",
         "pk": 1,
         "fields": {
-            "nombre": "GanoExcel El Salvador",
-            "telefono": "2222-1111",
-            "direccion": "San Salvador, El Salvador"
+            "name": "GanoExcel El Salvador",
+            "code_id": "GANOEXSV",
+            "email": "ganoexcel@elsalvador.com",
+            "phone": "+503 2222-1111",
+            "address": "San Salvador, El Salvador",
+            "nit": "0614-050789-101-0"
         }
     },
     {
-        "model": "inventory.distribuidor",
+        "model": "inventory.Distributor",
         "pk": 2,
         "fields": {
-            "nombre": "Distribuidora Centro América",
-            "telefono": "2222-2222",
-            "direccion": "Guatemala City, Guatemala"
+            "name": "Distributora Centro América",
+            "code_id": "DISTCAGT",
+            "email": "distca@guatemala.com",
+            "phone": "+502 2222-2222",
+            "address": "Guatemala City, Guatemala",
+            "nit": "0614-050789-102-0"
         }
     },
     {
-        "model": "inventory.distribuidor",
-        "pk": 3,
-        "fields": {
-            "nombre": "Gano Honduras",
-            "telefono": "2222-3333",
-            "direccion": "Tegucigalpa, Honduras"
-        }
-    },
-    {
-        "model": "inventory.distribuidor",
-        "pk": 4,
-        "fields": {
-            "nombre": "Natural Health Corp",
-            "telefono": "2222-4444",
-            "direccion": "San José, Costa Rica"
-        }
-    },
-    {
-        "model": "inventory.distribuidor",
-        "pk": 5,
-        "fields": {
-            "nombre": "Wellness Distributors",
-            "telefono": "2222-5555",
-            "direccion": "Managua, Nicaragua"
-        }
-    },
-    {
-        "model": "inventory.distribuidor",
-        "pk": 6,
-        "fields": {
-            "nombre": "GanoLife Panamá",
-            "telefono": "2222-6666",
-            "direccion": "Ciudad de Panamá, Panamá"
-        }
-    },
-    {
-        "model": "inventory.distribuidor",
-        "pk": 7,
-        "fields": {
-            "nombre": "Bio Natural Solutions",
-            "telefono": "2222-7777",
-            "direccion": "San Salvador, El Salvador"
-        }
-    },
-    {
-        "model": "inventory.distribuidor",
-        "pk": 8,
-        "fields": {
-            "nombre": "Health & Wellness SA",
-            "telefono": "2222-8888",
-            "direccion": "Santa Ana, El Salvador"
-        }
-    },
-    {
-        "model": "inventory.distribuidor",
-        "pk": 9,
-        "fields": {
-            "nombre": "GanoVida",
-            "telefono": "2222-9999",
-            "direccion": "San Miguel, El Salvador"
-        }
-    },
-    {
-        "model": "inventory.distribuidor",
-        "pk": 10,
-        "fields": {
-            "nombre": "Natural Products CA",
-            "telefono": "2222-0000",
-            "direccion": "La Libertad, El Salvador"
-        }
-    },
-    {
-        "model": "inventory.producto",
+        "model": "inventory.Product",
         "pk": 1,
         "fields": {
-            "nombre": "Gano Café Classic",
-            "descripcion": "Café negro con extracto de Ganoderma",
-            "precio": "15.99",
-            "stock": 100,
-            "codigo": "GC001",
-            "fecha_vencimiento": "2025-11-05"
+            "name": "Gano Café Classic",
+            "units_per_box": 20,
+            "distributor_price": "12.99",
+            "public_price": "15.99",
+            "quantity": 100
         }
     },
     {
-        "model": "inventory.producto",
+        "model": "inventory.Product",
         "pk": 2,
         "fields": {
-            "nombre": "Gano Café 3 en 1",
-            "descripcion": "Café con crema y azúcar con Ganoderma",
-            "precio": "17.99",
-            "stock": 150,
-            "codigo": "GC002",
-            "fecha_vencimiento": "2025-11-05"
-        }
-    },
-    {
-        "model": "inventory.producto",
-        "pk": 3,
-        "fields": {
-            "nombre": "Gano Chocolate",
-            "descripcion": "Chocolate caliente con Ganoderma",
-            "precio": "16.99",
-            "stock": 80,
-            "codigo": "GCH001",
-            "fecha_vencimiento": "2025-11-05"
-        }
-    },
-    {
-        "model": "inventory.producto",
-        "pk": 4,
-        "fields": {
-            "nombre": "Gano Cordyceps",
-            "descripcion": "Cápsulas de Cordyceps",
-            "precio": "45.99",
-            "stock": 50,
-            "codigo": "GS001",
-            "fecha_vencimiento": "2026-11-05"
-        }
-    },
-    {
-        "model": "inventory.producto",
-        "pk": 5,
-        "fields": {
-            "nombre": "Gano Excel",
-            "descripcion": "Cápsulas de Ganoderma Lucidum",
-            "precio": "39.99",
-            "stock": 60,
-            "codigo": "GS002",
-            "fecha_vencimiento": "2026-11-05"
-        }
-    },
-    {
-        "model": "inventory.producto",
-        "pk": 6,
-        "fields": {
-            "nombre": "Gano Cereal",
-            "descripcion": "Cereal con Ganoderma",
-            "precio": "12.99",
-            "stock": 70,
-            "codigo": "GF001",
-            "fecha_vencimiento": "2025-11-05"
-        }
-    },
-    {
-        "model": "inventory.producto",
-        "pk": 7,
-        "fields": {
-            "nombre": "Gano Jabón",
-            "descripcion": "Jabón con extracto de Ganoderma",
-            "precio": "8.99",
-            "stock": 120,
-            "codigo": "GP001",
-            "fecha_vencimiento": "2026-11-05"
-        }
-    },
-    {
-        "model": "inventory.producto",
-        "pk": 8,
-        "fields": {
-            "nombre": "Gano Shampoo",
-            "descripcion": "Shampoo con Ganoderma",
-            "precio": "13.99",
-            "stock": 90,
-            "codigo": "GP002",
-            "fecha_vencimiento": "2026-11-05"
-        }
-    },
-    {
-        "model": "inventory.producto",
-        "pk": 9,
-        "fields": {
-            "nombre": "Gano Toothpaste",
-            "descripcion": "Pasta dental con Ganoderma",
-            "precio": "7.99",
-            "stock": 100,
-            "codigo": "GP003",
-            "fecha_vencimiento": "2026-11-05"
-        }
-    },
-    {
-        "model": "inventory.producto",
-        "pk": 10,
-        "fields": {
-            "nombre": "Gano Fresh",
-            "descripcion": "Bebida energética con Ganoderma",
-            "precio": "19.99",
-            "stock": 80,
-            "codigo": "GB001",
-            "fecha_vencimiento": "2025-11-05"
+            "name": "Gano Café 3 en 1",
+            "units_per_box": 20,
+            "distributor_price": "14.99",
+            "public_price": "17.99",
+            "quantity": 150
         }
     }
 ] 
