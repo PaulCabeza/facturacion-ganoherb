@@ -1,0 +1,49 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Lista de Clientes{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Lista de Clientes</h1>
+        <a href="{% url 'inventory:customer_create' %}" 
+           class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Nuevo Cliente
+        </a>
+    </div>
+    
+    <div class="bg-white shadow-md rounded my-6">
+        <table class="min-w-full">
+            <thead>
+                <tr class="bg-gray-50">
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for customer in customers %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ customer.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{% if customer.code_id %}{{ customer.code_id }}{% endif %}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ customer.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ customer.phone }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{% url 'inventory:customer_update' customer.pk %}" 
+                           class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</a>
+                        <a href="{% url 'inventory:customer_delete' customer.pk %}" 
+                           class="text-red-600 hover:text-red-900">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center">No hay clientes registrados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 

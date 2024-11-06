@@ -52,28 +52,26 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-class Distributor(models.Model):
+class Customer(models.Model):
     name = models.CharField(
         max_length=200,
         verbose_name="Nombre",
         error_messages={
-            'blank': 'El nombre del distribuidor es requerido',
-            'null': 'El nombre del distribuidor es requerido',
+            'blank': 'El nombre del cliente es requerido',
+            'null': 'El nombre del cliente es requerido',
         }
     )
     code_id = models.CharField(
         max_length=10,
-        verbose_name="Código",
-        error_messages={
-            'blank': 'El código es requerido',
-            'null': 'El código es requerido',
-        }
+        verbose_name="Código de distribuidor",
+        blank=True,  # Hacer opcional
+        null=True,   # Hacer opcional
     )
     email = models.EmailField(
         unique=True,
         verbose_name="Correo electrónico",
         error_messages={
-            'unique': 'Ya existe un distribuidor con este correo electrónico',
+            'unique': 'Ya existe un cliente con este correo electrónico',
             'invalid': 'Ingrese un correo electrónico válido',
             'blank': 'El correo electrónico es requerido',
             'null': 'El correo electrónico es requerido',
@@ -98,8 +96,8 @@ class Distributor(models.Model):
     )
 
     class Meta:
-        verbose_name = "Distribuidor"
-        verbose_name_plural = "Distribuidores"
+        verbose_name = "Cliente"
+        verbose_name_plural = "Clientes"
 
     def __str__(self):
         return self.name
@@ -116,7 +114,7 @@ class Invoice(models.Model):
         }
     )
     customer = models.ForeignKey(
-        Distributor,
+        Customer,
         on_delete=models.CASCADE,
         verbose_name="Cliente",
         error_messages={

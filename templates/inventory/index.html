@@ -35,25 +35,25 @@
         </div>
 
         <div class="bg-green-50 p-6 rounded-lg shadow">
-            <h2 class="font-bold text-xl mb-4 text-green-700">Distribuidores</h2>
-            <p class="text-3xl font-bold text-green-600 mb-4">{{ total_distributors }}</p>
+            <h2 class="font-bold text-xl mb-4 text-green-700">Clientes</h2>
+            <p class="text-3xl font-bold text-green-600 mb-4">{{ total_customers }}</p>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
                         <tr>
-                            <th class="text-left text-green-600">Distribuidor</th>
+                            <th class="text-left text-green-600">Cliente</th>
                             <th class="text-right text-green-600">Código</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for distributor in distributors %}
+                        {% for customer in customers %}
                         <tr class="border-b border-green-100">
-                            <td class="py-2">{{ distributor.name }}</td>
-                            <td class="text-right py-2">{{ distributor.code_id }}</td>
+                            <td class="py-2">{{ customer.name }}</td>
+                            <td class="text-right py-2">{% if customer.code_id %}{{ customer.code_id }}{% endif %}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="2" class="py-2 text-center text-gray-500">No hay distribuidores disponibles.</td>
+                            <td colspan="2" class="py-2 text-center text-gray-500">No hay clientes disponibles.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -94,9 +94,9 @@
            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Nuevo Producto
         </a>
-        <a href="{% url 'inventory:distributor_create' %}" 
+        <a href="{% url 'inventory:customer_create' %}" 
            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-            Nuevo Distribuidor
+            Nuevo Cliente
         </a>
         <a href="{% url 'inventory:invoice_create' %}" 
            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">

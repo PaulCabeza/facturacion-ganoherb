@@ -7,8 +7,8 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import Sum
 from django.db import transaction
-from .models import Product, Distributor, Invoice, InvoiceDetail
-from .forms import ProductForm, DistributorForm, InvoiceForm, InvoiceDetailForm
+from .models import Product, Customer, Invoice, InvoiceDetail
+from .forms import ProductForm, CustomerForm, InvoiceForm, InvoiceDetailForm
 
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
@@ -18,15 +18,15 @@ class CustomLoginView(LoginView):
 def index(request):
     # Obtener los últimos 5 registros de cada modelo
     products = Product.objects.all().order_by('-id')[:5]
-    distributors = Distributor.objects.all().order_by('-id')[:5]
+    customers = Customer.objects.all().order_by('-id')[:5]
     invoices = Invoice.objects.all().order_by('-date')[:5]
 
     context = {
         'total_products': Product.objects.count(),
-        'total_distributors': Distributor.objects.count(),
+        'total_customers': Customer.objects.count(),
         'total_invoices': Invoice.objects.count(),
         'products': products,
-        'distributors': distributors,
+        'customers': customers,
         'invoices': invoices,
     }
     
@@ -51,37 +51,40 @@ def product_create(request):
     return render(request, 'inventory/product_form.html', {'form': form})
 
 @login_required
-def distributor_list(request):
-    distributors = Distributor.objects.all()
-    return render(request, 'inventory/distributor_list.html', {'distributors': distributors})
-
+def customer_list(request):
+    customers = Customer.objects.all()
+    return render(request, 'inventory/customer_list.html', {'customers': customers})
 
 @login_required
-def distributor_create(request):
+def customer_create(request):
     if request.method == 'POST':
-        form = DistributorForm(request.POST)
+        form = CustomerForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('inventory:distributor_list')
+            return redirect('inventory:customer_list')
     else:
-        form = DistributorForm()
-    return render(request, 'inventory/distributor_form.html', {'form': form})
+        form = CustomerForm()
+    return render(request, 'inventory/customer_form.html', {'form': form})
 
 @login_required
-def distributor_update(request, pk):
-    distributor = get_object_or_404(Distributor, pk=pk)
+def customer_update(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
     if request.method == 'POST':
-        form = DistributorForm(request.POST, instance=distributor)
+        form = CustomerForm(request.POST, instance=customer)
         if form.is_valid():
             form.save()
-            return redirect('inventory:distributor_list')
+            return redirect('inventory:customer_list')
     else:
-        form = DistributorForm(instance=distributor)
-    return render(request, 'inventory/distributor_form.html', {'form': form, 'distributor': distributor})
+        form = CustomerForm(instance=customer)
+    return render(request, 'inventory/customer_form.html', {'form': form, 'customer': customer})
 
 @login_required
-def distributor_delete(request, pk):
-    pass
+def customer_delete(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    if request.method == 'POST':
+        customer.delete()
+        return redirect('inventory:customer_list')
+    return render(request, 'inventory/customer_confirm_delete.html', {'customer': customer})
 
 @login_required
 def invoice_list(request):
@@ -281,12 +284,12 @@ def invoice_update(request, pk):
     })
 
 @login_required
-def get_distributor_details(request, pk):
-    distributor = get_object_or_404(Distributor, pk=pk)
+def get_customer_details(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
     data = {
-        'code_id': distributor.code_id,
-        'address': distributor.address,
-        'phone': distributor.phone,
+        'code_id': customer.code_id,
+        'address': customer.address,
+        'phone': customer.phone,
     }
     return JsonResponse(data)
 

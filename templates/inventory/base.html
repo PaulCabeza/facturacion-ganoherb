@@ -21,7 +21,7 @@
                 <div class="hidden md:flex items-center space-x-3">
                     {% if user.is_authenticated %}
                         <a href="{% url 'inventory:product_list' %}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Productos</a>
-                        <a href="{% url 'inventory:distributor_list' %}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Distribuidores</a>
+                        <a href="{% url 'inventory:customer_list' %}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Clientes</a>
                         <a href="{% url 'inventory:invoice_list' %}" class="py-4 px-2 text-gray-500 font-semibold hover:text-green-500 transition duration-300">Facturas</a>
                         <div class="relative">
                             <button class="py-2 px-2 font-medium text-gray-500 rounded hover:bg-green-500 hover:text-white transition duration-300">

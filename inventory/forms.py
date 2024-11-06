@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from .models import Product, Distributor, Invoice, InvoiceDetail
+from .models import Product, Customer, Invoice, InvoiceDetail
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -20,9 +20,9 @@ class ProductForm(forms.ModelForm):
             'quantity': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
         }
 
-class DistributorForm(forms.ModelForm):
+class CustomerForm(forms.ModelForm):
     class Meta:
-        model = Distributor
+        model = Customer
         fields = ['name', 'code_id', 'email', 'phone', 'address', 'nit']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),

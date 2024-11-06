@@ -51,7 +51,7 @@
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="customer">
-                    Distribuidor
+                    Cliente
                 </label>
                 {{ form.customer }}
                 {% if form.customer.errors %}
@@ -63,7 +63,7 @@
         </div>
 
         <div id="customerDetails" class="bg-gray-50 p-4 rounded mb-6 hidden">
-            <h2 class="font-bold text-lg mb-2">Detalles del Distribuidor</h2>
+            <h2 class="font-bold text-lg mb-2">Detalles del Cliente</h2>
             <p><span class="font-semibold">Código:</span> <span id="customerCode"></span></p>
             <p><span class="font-semibold">Dirección:</span> <span id="customerAddress"></span></p>
             <p><span class="font-semibold">Teléfono:</span> <span id="customerPhone"></span></p>
@@ -182,12 +182,12 @@
             }, 300); // Espera 300ms después de que el usuario deje de escribir
         });
 
-        // Cargar detalles del distribuidor
+        // Cargar detalles del cliente
         $('#id_customer').change(function() {
-            var distributorId = $(this).val();
-            if (distributorId) {
+            var customerId = $(this).val();
+            if (customerId) {
                 $.ajax({
-                    url: '/inventory/get_distributor_details/' + distributorId + '/',
+                    url: '/inventory/get_customer_details/' + customerId + '/',
                     type: 'GET',
                     success: function(data) {
                         $('#customerCode').text(data.code_id);
