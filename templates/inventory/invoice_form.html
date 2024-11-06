@@ -129,6 +129,15 @@
             </table>
         </div>
 
+        <div class="flex justify-end mb-6">
+            <div class="bg-gray-50 p-4 rounded-lg shadow-sm w-64">
+                <div class="flex justify-between items-center font-bold text-lg">
+                    <span>Total:</span>
+                    <span>$<span id="invoiceTotal">0.00</span></span>
+                </div>
+            </div>
+        </div>
+
         <button type="button" id="addRow" 
                 class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-6">
             Agregar Producto
@@ -241,6 +250,9 @@
             const unitPrice = parseFloat(row.find('input[name$="-unit_price"]').val()) || 0;
             const subtotal = quantity * unitPrice;
             row.find('input[name$="-subtotal"]').val(subtotal.toFixed(2));
+            
+            // Actualizar el total después de calcular el subtotal
+            updateInvoiceTotal();
         }
 
         // Calcular subtotal cuando cambie la cantidad o el precio unitario
@@ -276,7 +288,7 @@
             if ($('.formset-row').length > 1) {
                 $(this).closest('tr').remove();
                 updateFormsetIndex();
-                console.log('Deleted row. Remaining rows:', $('.formset-row').length);
+                updateInvoiceTotal();
             }
         });
 
@@ -393,6 +405,22 @@
         
         // Actualizar índices iniciales
         updateFormsetIndex();
+
+        // Calcular el total inicial cuando se carga la página
+        updateInvoiceTotal();
     });
+
+    // Agregar esta función después de calculateSubtotal
+    function updateInvoiceTotal() {
+        let total = 0;
+        $('.formset-row').each(function() {
+            const subtotalStr = $(this).find('input[name$="-subtotal"]').val() || '0';
+            const subtotal = parseFloat(subtotalStr);
+            if (!isNaN(subtotal)) {
+                total += subtotal;
+            }
+        });
+        $('#invoiceTotal').text(total.toFixed(2));
+    }
 </script>
 {% endblock %}

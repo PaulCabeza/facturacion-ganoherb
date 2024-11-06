@@ -4,7 +4,7 @@
         "pk": 1,
         "fields": {
             "name": "Jose Perez",
-            "code_id": "1234567",
+            "code_id": null,
             "email": "jperez@gmail.com",
             "phone": "+503 2222-1111",
             "address": "San Salvador, El Salvador",

@@ -8,7 +8,7 @@
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div class="bg-gray-50 p-4 rounded">
-            <h2 class="font-bold text-lg mb-2">Información del Distribuidor</h2>
+            <h2 class="font-bold text-lg mb-2">Información del Cliente</h2>
             <p><span class="font-semibold">Nombre:</span> {{ invoice.customer.name }}</p>
             <p><span class="font-semibold">Código:</span> {{ invoice.customer.code_id }}</p>
             <p><span class="font-semibold">Dirección:</span> {{ invoice.customer.address }}</p>
@@ -17,7 +17,7 @@
         <div class="bg-gray-50 p-4 rounded">
             <h2 class="font-bold text-lg mb-2">Información de la Factura</h2>
             <p><span class="font-semibold">Fecha:</span> {{ invoice.date|date:"d/m/Y H:i" }}</p>
-            <p><span class="font-semibold">Total:</span> ${{ invoice.total }}</p>
+            <p><span class="font-semibold">Total:</span> ${{ invoice.total|stringformat:".2f" }}</p>
             <p><span class="font-semibold">Estado:</span> 
                 {% if invoice.paid %}
                     <span class="text-green-600">Pagada</span>
@@ -44,8 +44,8 @@
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap">{{ detail.product.name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ detail.quantity }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${{ detail.unit_price }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${{ detail.subtotal }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${{ detail.unit_price|stringformat:".2f" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${{ detail.subtotal|stringformat:".2f" }}</td>
                 </tr>
                 {% endfor %}
                 <tr class="bg-gray-50">
