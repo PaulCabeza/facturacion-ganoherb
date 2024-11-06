@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from .models import Product, Distributor, Invoice, InvoiceDetail
 
 class ProductForm(forms.ModelForm):
@@ -46,6 +47,19 @@ class InvoiceDetailForm(forms.ModelForm):
     class Meta:
         model = InvoiceDetail
         fields = ['product', 'quantity', 'unit_price', 'subtotal']
+        error_messages = {
+            'product': {
+                'required': _('Debe seleccionar un producto'),
+            },
+            'quantity': {
+                'required': _('La cantidad es requerida'),
+                'min_value': _('La cantidad debe ser mayor a 0'),
+            },
+            'unit_price': {
+                'required': _('El precio unitario es requerido'),
+                'min_value': _('El precio debe ser mayor a 0'),
+            },
+        }
         widgets = {
             'product': forms.Select(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
             'quantity': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600', 'min': '1'}),

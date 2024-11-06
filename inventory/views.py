@@ -247,3 +247,9 @@ def product_delete(request, pk):
         product.delete()
         return redirect('inventory:product_list')
     return render(request, 'inventory/product_confirm_delete.html', {'product': product})
+
+@login_required
+def validate_invoice_number(request):
+    invoice_number = request.GET.get('invoice_number', '')
+    exists = Invoice.objects.filter(invoice_number=invoice_number).exists()
+    return JsonResponse({'exists': exists})

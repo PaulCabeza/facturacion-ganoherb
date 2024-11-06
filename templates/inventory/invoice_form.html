@@ -149,6 +149,37 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
+        // Validación del número de factura
+        let timeoutId;
+        $('#invoice_number').on('input', function() {
+            clearTimeout(timeoutId);
+            const invoiceNumber = $(this).val();
+            const input = $(this);
+            
+            timeoutId = setTimeout(function() {
+                if (invoiceNumber) {
+                    $.ajax({
+                        url: '/inventory/validate_invoice_number/',
+                        data: {
+                            'invoice_number': invoiceNumber
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            if (data.exists) {
+                                input.addClass('border-red-500');
+                                if (!input.next('.error-message').length) {
+                                    input.after('<p class="text-red-500 text-xs italic mt-1 error-message">Ya existe una factura con este número</p>');
+                                }
+                            } else {
+                                input.removeClass('border-red-500');
+                                input.next('.error-message').remove();
+                            }
+                        }
+                    });
+                }
+            }, 300); // Espera 300ms después de que el usuario deje de escribir
+        });
+
         // Cargar detalles del distribuidor
         $('#id_customer').change(function() {
             var distributorId = $(this).val();
@@ -172,6 +203,13 @@
         $('#invoiceForm').on('submit', function(e) {
             let isValid = true;
             let errorMessages = [];
+
+            // Verificar si hay error en el número de factura
+            if ($('#invoice_number').next('.error-message').length > 0) {
+                e.preventDefault();
+                errorMessages.push("El número de factura ya existe");
+                isValid = false;
+            }
 
             // Validar que haya al menos una fila de detalle
             if ($('.formset-row').length === 0) {
