@@ -168,10 +168,75 @@
             }
         });
 
+        // Validación del formulario
+        $('#invoiceForm').on('submit', function(e) {
+            let isValid = true;
+            let errorMessages = [];
+
+            // Validar que haya al menos una fila de detalle
+            if ($('.formset-row').length === 0) {
+                errorMessages.push("Debe agregar al menos un producto a la factura");
+                isValid = false;
+            }
+
+            // Validar cada fila de detalle
+            $('.formset-row').each(function(index) {
+                const row = $(this);
+                const product = row.find('select[name$="-product"]').val();
+                const quantity = row.find('input[name$="-quantity"]').val();
+                const unitPrice = row.find('input[name$="-unit_price"]').val();
+
+                if (!product) {
+                    row.find('select[name$="-product"]').addClass('border-red-500');
+                    errorMessages.push("Debe seleccionar un producto en la fila " + (index + 1));
+                    isValid = false;
+                } else {
+                    row.find('select[name$="-product"]').removeClass('border-red-500');
+                }
+
+                if (!quantity || quantity <= 0) {
+                    row.find('input[name$="-quantity"]').addClass('border-red-500');
+                    errorMessages.push("La cantidad debe ser mayor a 0 en la fila " + (index + 1));
+                    isValid = false;
+                } else {
+                    row.find('input[name$="-quantity"]').removeClass('border-red-500');
+                }
+
+                if (!unitPrice || unitPrice <= 0) {
+                    row.find('input[name$="-unit_price"]').addClass('border-red-500');
+                    errorMessages.push("El precio unitario debe ser mayor a 0 en la fila " + (index + 1));
+                    isValid = false;
+                } else {
+                    row.find('input[name$="-unit_price"]').removeClass('border-red-500');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                // Mostrar mensajes de error
+                const errorDiv = $('<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>');
+                errorMessages.forEach(function(message) {
+                    errorDiv.append($('<p></p>').text(message));
+                });
+                
+                // Remover mensajes de error anteriores y agregar los nuevos
+                $('.error-messages').remove();
+                errorDiv.addClass('error-messages');
+                $('#invoiceForm').prepend(errorDiv);
+                
+                // Scroll hacia arriba para mostrar los errores
+                $('html, body').animate({
+                    scrollTop: errorDiv.offset().top - 100
+                }, 500);
+            }
+        });
+
         // Agregar nueva fila
         $('#addRow').click(function() {
-            var newRow = $('.formset-row:last').clone(true);
+            var newRow = $('.formset-row:first').clone(true);
             newRow.find('input').val('');
+            newRow.find('select').val('');
+            newRow.find('.border-red-500').removeClass('border-red-500');
             $('#invoiceDetailsBody').append(newRow);
             updateFormsetIndex();
         });
@@ -213,14 +278,6 @@
         $('.formset-row').each(function() {
             calculateSubtotal($(this));
         });
-
-        // Eliminar la duplicación de la función de agregar fila
-        // $('#addRow').click(function() {
-        //     var newRow = $('.formset-row:last').clone(true);
-        //     newRow.find('input').val('');
-        //     $('#invoiceDetailsBody').append(newRow);
-        //     updateFormsetIndex();
-        // });
     });
 </script>
 {% endblock %}
