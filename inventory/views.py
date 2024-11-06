@@ -42,7 +42,9 @@ def product_create(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
-            form.save()
+            # Guardar sin validaciones adicionales
+            product = form.save(commit=False)
+            product.save()
             return redirect('inventory:product_list')
     else:
         form = ProductForm()
@@ -158,7 +160,9 @@ def product_update(request, pk):
     if request.method == 'POST':
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
-            form.save()
+            # Guardar sin validaciones adicionales
+            product = form.save(commit=False)
+            product.save()
             return redirect('inventory:product_list')
     else:
         form = ProductForm(instance=product)

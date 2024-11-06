@@ -1,31 +1,35 @@
 from django import forms
-from django.utils import timezone
 from .models import Product, Distributor, Invoice, InvoiceDetail
 
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'units_per_box', 'distributor_price', 'public_price', 'quantity']
-        labels = {
-            'name': 'Nombre',
-            'units_per_box': 'Sobres por caja',
-            'distributor_price': 'Precio distribuidor',
-            'public_price': 'Precio al público',
-            'quantity': 'Cantidad',
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'units_per_box': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'distributor_price': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600',
+                'step': 'any'
+            }),
+            'public_price': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600',
+                'step': 'any'
+            }),
+            'quantity': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
         }
-
 
 class DistributorForm(forms.ModelForm):
     class Meta:
         model = Distributor
-        fields = ['name', 'code_id', 'nit', 'phone', 'email', 'address']
-        labels = {
-            'name': 'Nombre',
-            'code_id': 'Código de distribuidor',
-            'nit': 'NIT',
-            'phone': 'Teléfono',
-            'email': 'Correo electrónico',
-            'address': 'Dirección',            
+        fields = ['name', 'code_id', 'email', 'phone', 'address', 'nit']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'code_id': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'email': forms.EmailInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'phone': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'address': forms.Textarea(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600', 'rows': 3}),
+            'nit': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
         }
 
 class InvoiceForm(forms.ModelForm):
@@ -33,32 +37,21 @@ class InvoiceForm(forms.ModelForm):
         model = Invoice
         fields = ['invoice_number', 'customer', 'date']
         widgets = {
-            'date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'invoice_number': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'customer': forms.Select(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'date': forms.DateTimeInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600', 'type': 'datetime-local'}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['date'].initial = timezone.now()
-        
 
 class InvoiceDetailForm(forms.ModelForm):
     class Meta:
         model = InvoiceDetail
         fields = ['product', 'quantity', 'unit_price', 'subtotal']
         widgets = {
-            'subtotal': forms.NumberInput(attrs={'readonly': 'readonly'}),
+            'product': forms.Select(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600'}),
+            'quantity': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600', 'min': '1'}),
+            'unit_price': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600',
+                'step': 'any'
+            }),
+            'subtotal': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600', 'readonly': True}),
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        quantity = cleaned_data.get('quantity')
-        unit_price = cleaned_data.get('unit_price')
-        if quantity and unit_price:
-            cleaned_data['subtotal'] = quantity * unit_price
-        return cleaned_data
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['quantity'].widget.attrs.update({'class': 'w-16 text-sm px-2 py-1 border rounded'})
-        self.fields['unit_price'].widget.attrs.update({'class': 'w-16 text-sm px-2 py-1 border rounded'})
-        self.fields['subtotal'].widget.attrs.update({'class': 'w-20 text-sm px-2 py-1 border rounded'})
