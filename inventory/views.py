@@ -101,27 +101,58 @@ def invoice_create(request):
     if request.method == 'POST':
         form = InvoiceForm(request.POST)
         formset = InvoiceDetailFormSet(request.POST)
+        
         if form.is_valid() and formset.is_valid():
             invoice = form.save(commit=False)
-            invoice.total = 0  # Inicializamos el total a 0
+            invoice.total = 0
             invoice.save()
             
             formset.instance = invoice
-            details = formset.save()
+            details = formset.save(commit=False)
             
-            # Calculamos el total sumando los subtotales de los detalles
-            total = sum(detail.subtotal for detail in details)
-            invoice.total = total
-            invoice.save()
-            
-            return redirect('inventory:invoice_print', pk=invoice.pk)
+            if not details:  # Si no hay detalles
+                form.add_error(None, "Debe agregar al menos un producto a la factura")
+                invoice.delete()
+            else:
+                total = 0
+                # Verificar stock y actualizar inventario
+                for detail in details:
+                    product = detail.product
+                    if product.quantity < detail.quantity:
+                        form.add_error(None, f"No hay suficiente stock del producto {product.name}. Stock actual: {product.quantity}")
+                        invoice.delete()
+                        return render(request, 'inventory/invoice_form.html', {
+                            'form': form,
+                            'formset': formset,
+                            'form_errors': form.errors.get('__all__', [])
+                        })
+                    
+                    # Actualizar el stock
+                    product.quantity -= detail.quantity
+                    product.save()
+                    
+                    # Calcular subtotal y guardar detalle
+                    detail.subtotal = detail.quantity * detail.unit_price
+                    total += detail.subtotal
+                    detail.save()
+                
+                # Actualizar el total de la factura
+                invoice.total = total
+                invoice.save()
+                
+                return redirect('inventory:invoice_print', pk=invoice.pk)
     else:
         form = InvoiceForm(initial={'date': timezone.now()})
         formset = InvoiceDetailFormSet()
     
-    return render(request, 'inventory/invoice_form.html', {'form': form, 'formset': formset})
+    return render(request, 'inventory/invoice_form.html', {
+        'form': form, 
+        'formset': formset,
+        'form_errors': form.errors.get('__all__', [])
+    })
 
 @login_required
+@transaction.atomic
 def invoice_update(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
     InvoiceDetailFormSet = inlineformset_factory(Invoice, InvoiceDetail, form=InvoiceDetailForm, extra=1)
@@ -129,15 +160,56 @@ def invoice_update(request, pk):
     if request.method == 'POST':
         form = InvoiceForm(request.POST, instance=invoice)
         formset = InvoiceDetailFormSet(request.POST, instance=invoice)
+        
         if form.is_valid() and formset.is_valid():
-            form.save()
-            formset.save()
-            return redirect('inventory:invoice_detail', pk=invoice.pk)
+            # Restaurar el inventario anterior
+            for detail in invoice.details.all():
+                product = detail.product
+                product.quantity += detail.quantity
+                product.save()
+            
+            invoice = form.save(commit=False)
+            details = formset.save(commit=False)
+            
+            if not details:
+                form.add_error(None, "Debe agregar al menos un producto a la factura")
+            else:
+                total = 0
+                # Verificar stock y actualizar inventario
+                for detail in details:
+                    product = detail.product
+                    if product.quantity < detail.quantity:
+                        form.add_error(None, f"No hay suficiente stock del producto {product.name}. Stock actual: {product.quantity}")
+                        return render(request, 'inventory/invoice_form.html', {
+                            'form': form,
+                            'formset': formset,
+                            'invoice': invoice,
+                            'form_errors': form.errors.get('__all__', [])
+                        })
+                    
+                    # Actualizar el stock
+                    product.quantity -= detail.quantity
+                    product.save()
+                    
+                    # Calcular subtotal y guardar detalle
+                    detail.subtotal = detail.quantity * detail.unit_price
+                    total += detail.subtotal
+                    detail.save()
+                
+                # Actualizar el total de la factura
+                invoice.total = total
+                invoice.save()
+                
+                return redirect('inventory:invoice_detail', pk=invoice.pk)
     else:
         form = InvoiceForm(instance=invoice)
         formset = InvoiceDetailFormSet(instance=invoice)
     
-    return render(request, 'inventory/invoice_form.html', {'form': form, 'formset': formset, 'invoice': invoice})
+    return render(request, 'inventory/invoice_form.html', {
+        'form': form,
+        'formset': formset,
+        'invoice': invoice
+    })
 
 @login_required
 def get_distributor_details(request, pk):

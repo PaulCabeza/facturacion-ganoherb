@@ -7,6 +7,14 @@
 <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
     <h1 class="text-2xl font-bold mb-6">{% if invoice %}Editar Factura{% else %}Crear Factura{% endif %}</h1>
     
+    {% if form_errors %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            {% for error in form_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
     <form method="post" id="invoiceForm">
         {% csrf_token %}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -15,23 +23,40 @@
                     Número de Factura
                 </label>
                 <input type="text" name="invoice_number" id="invoice_number"
-                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600 {% if form.invoice_number.errors %}border-red-500{% endif %}"
                        value="{{ form.invoice_number.value|default:'' }}"
-                       placeholder="Número de Factura">
+                       placeholder="Número de Factura"
+                       required>
+                {% if form.invoice_number.errors %}
+                    {% for error in form.invoice_number.errors %}
+                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="date">
                     Fecha
                 </label>
                 <input type="datetime-local" name="date" id="date"
-                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                       value="{{ form.date.value|date:'Y-m-d\TH:i'|default:'' }}">
+                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600 {% if form.date.errors %}border-red-500{% endif %}"
+                       value="{{ form.date.value|date:'Y-m-d\TH:i'|default:'' }}"
+                       required>
+                {% if form.date.errors %}
+                    {% for error in form.date.errors %}
+                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
             </div>
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="customer">
                     Distribuidor
                 </label>
                 {{ form.customer }}
+                {% if form.customer.errors %}
+                    {% for error in form.customer.errors %}
+                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
 
@@ -58,18 +83,35 @@
                 <tbody id="invoiceDetailsBody">
                     {% for form in formset %}
                         <tr class="formset-row">
-                            <td class="px-6 py-4">{{ form.product }}</td>
+                            <td class="px-6 py-4">
+                                {{ form.product }}
+                                {% if form.product.errors %}
+                                    {% for error in form.product.errors %}
+                                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
                             <td class="px-6 py-4">
                                 <input type="number" name="{{ form.quantity.html_name }}" 
                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
                                        value="{{ form.quantity.value|default:'' }}"
-                                       min="1">
+                                       min="1" required>
+                                {% if form.quantity.errors %}
+                                    {% for error in form.quantity.errors %}
+                                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                                    {% endfor %}
+                                {% endif %}
                             </td>
                             <td class="px-6 py-4">
                                 <input type="number" name="{{ form.unit_price.html_name }}" 
                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
                                        value="{{ form.unit_price.value|default:'' }}"
-                                       step="0.01">
+                                       step="any" required>
+                                {% if form.unit_price.errors %}
+                                    {% for error in form.unit_price.errors %}
+                                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                                    {% endfor %}
+                                {% endif %}
                             </td>
                             <td class="px-6 py-4">
                                 <input type="number" name="{{ form.subtotal.html_name }}" 
