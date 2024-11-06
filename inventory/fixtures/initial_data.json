@@ -1,26 +1,38 @@
 [
     {
-        "model": "inventory.Distributor",
+        "model": "inventory.Customer",
         "pk": 1,
         "fields": {
-            "name": "GanoExcel El Salvador",
-            "code_id": "GANOEXSV",
-            "email": "ganoexcel@elsalvador.com",
+            "name": "Jose Perez",
+            "code_id": "1234567",
+            "email": "jperez@gmail.com",
             "phone": "+503 2222-1111",
             "address": "San Salvador, El Salvador",
             "nit": "0614-050789-101-0"
         }
     },
     {
-        "model": "inventory.Distributor",
+        "model": "inventory.Customer",
         "pk": 2,
         "fields": {
-            "name": "Distributora Centro América",
-            "code_id": "DISTCAGT",
-            "email": "distca@guatemala.com",
+            "name": "Jose Feliciano",
+            "code_id": "1234568",
+            "email": "jfeliciano@gmail.com",
             "phone": "+502 2222-2222",
             "address": "Guatemala City, Guatemala",
             "nit": "0614-050789-102-0"
+        }
+    },
+    {
+        "model": "inventory.Customer",
+        "pk": 3,
+        "fields": {
+            "name": "Manuel Jose",
+            "code_id": "1234569",
+            "email": "mmanueljose@gmail.com",
+            "phone": "+502 3333-3333",
+            "address": "San Salvador, El Salvador",
+            "nit": "0614-050789-103-0"
         }
     },
     {
@@ -29,8 +41,8 @@
         "fields": {
             "name": "Gano Café Classic",
             "units_per_box": 20,
-            "distributor_price": "12.99",
-            "public_price": "15.99",
+            "distributor_price": "17",
+            "public_price": "22",
             "quantity": 100
         }
     },
@@ -40,9 +52,20 @@
         "fields": {
             "name": "Gano Café 3 en 1",
             "units_per_box": 20,
-            "distributor_price": "14.99",
-            "public_price": "17.99",
-            "quantity": 150
+            "distributor_price": "17",
+            "public_price": "22",
+            "quantity": 100
+        }
+    },
+    {
+        "model": "inventory.Product",
+        "pk": 3,
+        "fields": {
+            "name": "Gano Chocolate",
+            "units_per_box": 20,
+            "distributor_price": "17",
+            "public_price": "22",
+            "quantity": 100
         }
     }
 ] 
