@@ -17,6 +17,8 @@
     
     <form method="post" id="invoiceForm">
         {% csrf_token %}
+        {{ formset.management_form }}
+        
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="invoice_number">
@@ -68,7 +70,6 @@
         </div>
         
         <h2 class="text-xl font-bold mb-4">Detalles de la Factura</h2>
-        {{ formset.management_form }}
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white mb-4" id="invoiceDetails">
                 <thead class="bg-gray-50">
@@ -146,6 +147,7 @@
     </form>
 </div>
 
+<!-- El script JavaScript se mantiene igual -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -199,123 +201,198 @@
             }
         });
 
-        // Validación del formulario
+        // Función mejorada para actualizar índices
+        function updateFormsetIndex() {
+            const validRows = $('.formset-row').filter(function() {
+                const row = $(this);
+                const product = row.find('select[name$="-product"]').val();
+                const quantity = row.find('input[name$="-quantity"]').val();
+                const unitPrice = row.find('input[name$="-unit_price"]').val();
+                return product && product !== 'None' && quantity && unitPrice;
+            });
+            
+            const totalForms = validRows.length;
+            $('#id_form-TOTAL_FORMS').val(totalForms);
+            
+            validRows.each(function(index) {
+                const row = $(this);
+                
+                // Actualizar índices solo para filas válidas
+                row.find('select, input').each(function() {
+                    const field = $(this);
+                    const name = field.attr('name');
+                    const newName = name.replace(/form-\d+/, `form-${index}`);
+                    field.attr('name', newName);
+                    
+                    const id = field.attr('id');
+                    if (id) {
+                        const newId = id.replace(/form-\d+/, `form-${index}`);
+                        field.attr('id', newId);
+                    }
+                });
+            });
+            
+            console.log('Updated indices. Valid forms:', totalForms);
+        }
+
+        // Función para calcular subtotal
+        function calculateSubtotal(row) {
+            const quantity = parseFloat(row.find('input[name$="-quantity"]').val()) || 0;
+            const unitPrice = parseFloat(row.find('input[name$="-unit_price"]').val()) || 0;
+            const subtotal = quantity * unitPrice;
+            row.find('input[name$="-subtotal"]').val(subtotal.toFixed(2));
+        }
+
+        // Calcular subtotal cuando cambie la cantidad o el precio unitario
+        $(document).on('input', 'input[name$="-quantity"], input[name$="-unit_price"]', function() {
+            calculateSubtotal($(this).closest('tr'));
+        });
+
+        // Función mejorada para agregar fila
+        $('#addRow').click(function() {
+            const lastRow = $('.formset-row:last');
+            const newRow = lastRow.clone();
+            
+            // Limpiar valores
+            newRow.find('input').val('');
+            newRow.find('select').val('');
+            newRow.find('.border-red-500').removeClass('border-red-500');
+            newRow.find('.error-message').remove();
+            
+            // Insertar nueva fila
+            lastRow.after(newRow);
+            
+            // Actualizar índices
+            updateFormsetIndex();
+            
+            // Calcular subtotal inicial
+            calculateSubtotal(newRow);
+            
+            console.log('Added new row. Current rows:', $('.formset-row').length);
+        });
+
+        // Función mejorada para eliminar fila
+        $('.delete-row').click(function() {
+            if ($('.formset-row').length > 1) {
+                $(this).closest('tr').remove();
+                updateFormsetIndex();
+                console.log('Deleted row. Remaining rows:', $('.formset-row').length);
+            }
+        });
+
+        // Reemplazar el evento submit actual con este:
         $('#invoiceForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Actualizar índices antes de validar
+            updateFormsetIndex();
+            
             let isValid = true;
             let errorMessages = [];
-
-            // Verificar si hay error en el número de factura
-            if ($('#invoice_number').next('.error-message').length > 0) {
-                e.preventDefault();
-                errorMessages.push("El número de factura ya existe");
-                isValid = false;
-            }
-
-            // Validar que haya al menos una fila de detalle
-            if ($('.formset-row').length === 0) {
-                errorMessages.push("Debe agregar al menos un producto a la factura");
-                isValid = false;
-            }
-
-            // Validar cada fila de detalle
+            let validRows = [];
+            
+            // Validar cada fila
             $('.formset-row').each(function(index) {
                 const row = $(this);
                 const product = row.find('select[name$="-product"]').val();
                 const quantity = row.find('input[name$="-quantity"]').val();
                 const unitPrice = row.find('input[name$="-unit_price"]').val();
-
-                if (!product) {
-                    row.find('select[name$="-product"]').addClass('border-red-500');
-                    errorMessages.push("Debe seleccionar un producto en la fila " + (index + 1));
-                    isValid = false;
-                } else {
-                    row.find('select[name$="-product"]').removeClass('border-red-500');
-                }
-
-                if (!quantity || quantity <= 0) {
-                    row.find('input[name$="-quantity"]').addClass('border-red-500');
-                    errorMessages.push("La cantidad debe ser mayor a 0 en la fila " + (index + 1));
-                    isValid = false;
-                } else {
-                    row.find('input[name$="-quantity"]').removeClass('border-red-500');
-                }
-
-                if (!unitPrice || unitPrice <= 0) {
-                    row.find('input[name$="-unit_price"]').addClass('border-red-500');
-                    errorMessages.push("El precio unitario debe ser mayor a 0 en la fila " + (index + 1));
-                    isValid = false;
-                } else {
-                    row.find('input[name$="-unit_price"]').removeClass('border-red-500');
+                
+                // Solo validar filas que tengan al menos un campo lleno
+                if (product && product !== 'None' && quantity && unitPrice) {
+                    validRows.push({
+                        index: validRows.length,
+                        product: product,
+                        quantity: quantity,
+                        unitPrice: unitPrice
+                    });
                 }
             });
-
-            if (!isValid) {
-                e.preventDefault();
-                // Mostrar mensajes de error
+            
+            if (validRows.length === 0) {
+                errorMessages.push("Debe agregar al menos un producto a la factura");
+                isValid = false;
+            } else {
+                // Recrear los campos del formset con solo las filas válidas
+                const tbody = $('#invoiceDetailsBody');
+                const originalFirstRow = tbody.find('.formset-row').first().clone();
+                
+                // Limpiar tbody
+                tbody.empty();
+                
+                // Agregar filas válidas
+                validRows.forEach((rowData, index) => {
+                    const newRow = originalFirstRow.clone();
+                    
+                    // Actualizar campos
+                    newRow.find('select[name$="-product"]')
+                        .attr('name', `form-${index}-product`)
+                        .attr('id', `id_form-${index}-product`)
+                        .val(rowData.product);
+                        
+                    newRow.find('input[name$="-quantity"]')
+                        .attr('name', `form-${index}-quantity`)
+                        .attr('id', `id_form-${index}-quantity`)
+                        .val(rowData.quantity);
+                        
+                    newRow.find('input[name$="-unit_price"]')
+                        .attr('name', `form-${index}-unit_price`)
+                        .attr('id', `id_form-${index}-unit_price`)
+                        .val(rowData.unitPrice);
+                        
+                    // Calcular y establecer subtotal
+                    const subtotal = (parseFloat(rowData.quantity) * parseFloat(rowData.unitPrice)).toFixed(2);
+                    newRow.find('input[name$="-subtotal"]')
+                        .attr('name', `form-${index}-subtotal`)
+                        .attr('id', `id_form-${index}-subtotal`)
+                        .val(subtotal);
+                        
+                    tbody.append(newRow);
+                });
+                
+                // Actualizar TOTAL_FORMS con el número correcto de filas válidas
+                $('#id_form-TOTAL_FORMS').val(validRows.length);
+                
+                console.log('Valid rows:', validRows.length);
+                console.log('Form data before submit:');
+                validRows.forEach((row, index) => {
+                    console.log(`Row ${index}:`, row);
+                });
+            }
+            
+            if (isValid) {
+                console.log('Form is valid, submitting...');
+                this.submit();
+            } else {
+                // Mostrar errores
                 const errorDiv = $('<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>');
                 errorMessages.forEach(function(message) {
                     errorDiv.append($('<p></p>').text(message));
                 });
                 
-                // Remover mensajes de error anteriores y agregar los nuevos
                 $('.error-messages').remove();
                 errorDiv.addClass('error-messages');
                 $('#invoiceForm').prepend(errorDiv);
                 
-                // Scroll hacia arriba para mostrar los errores
                 $('html, body').animate({
                     scrollTop: errorDiv.offset().top - 100
                 }, 500);
             }
         });
 
-        // Agregar nueva fila
-        $('#addRow').click(function() {
-            var newRow = $('.formset-row:first').clone(true);
-            newRow.find('input').val('');
-            newRow.find('select').val('');
-            newRow.find('.border-red-500').removeClass('border-red-500');
-            $('#invoiceDetailsBody').append(newRow);
-            updateFormsetIndex();
-        });
-
-        // Eliminar fila
-        $('.delete-row').click(function() {
-            if ($('.formset-row').length > 1) {
-                $(this).closest('tr').remove();
-                updateFormsetIndex();
-            }
-        });
-
-        // Actualizar índices del formset
-        function updateFormsetIndex() {
-            $('#invoiceDetailsBody tr').each(function(index) {
-                $(this).find('input, select').each(function() {
-                    var name = $(this).attr('name').replace(/\d+/, index);
-                    var id = 'id_' + name;
-                    $(this).attr({'name': name, 'id': id});
-                });
-            });
-            $('#id_form-TOTAL_FORMS').val($('.formset-row').length);
+        // Inicializar el management form
+        if (!$('#id_form-TOTAL_FORMS').length) {
+            const managementForm = `
+                <input type="hidden" name="form-TOTAL_FORMS" value="1" id="id_form-TOTAL_FORMS">
+                <input type="hidden" name="form-INITIAL_FORMS" value="0" id="id_form-INITIAL_FORMS">
+                <input type="hidden" name="form-MIN_NUM_FORMS" value="0" id="id_form-MIN_NUM_FORMS">
+                <input type="hidden" name="form-MAX_NUM_FORMS" value="1000" id="id_form-MAX_NUM_FORMS">
+            `;
+            $('#invoiceForm').prepend(managementForm);
         }
-
-        // Calcular subtotal
-        function calculateSubtotal(row) {
-            var quantity = parseFloat(row.find('[name$="-quantity"]').val()) || 0;
-            var unitPrice = parseFloat(row.find('[name$="-unit_price"]').val()) || 0;
-            var subtotal = quantity * unitPrice;
-            row.find('[name$="-subtotal"]').val(subtotal.toFixed(2));
-        }
-
-        // Calcular subtotal al cambiar cantidad o precio unitario
-        $('#invoiceDetailsBody').on('change', '[name$="-quantity"], [name$="-unit_price"]', function() {
-            calculateSubtotal($(this).closest('tr'));
-        });
-
-        // Calcular subtotal para filas existentes
-        $('.formset-row').each(function() {
-            calculateSubtotal($(this));
-        });
+        
+        // Actualizar índices iniciales
+        updateFormsetIndex();
     });
 </script>
 {% endblock %}

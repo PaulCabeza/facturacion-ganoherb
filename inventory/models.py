@@ -148,49 +148,15 @@ class Invoice(models.Model):
         return f"Factura {self.invoice_number} - {self.customer.name}"
 
 class InvoiceDetail(models.Model):
-    invoice = models.ForeignKey(
-        Invoice,
-        on_delete=models.CASCADE,
-        related_name='details',
-        verbose_name="Factura"
-    )
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        verbose_name="Producto",
-        error_messages={
-            'null': 'Debe seleccionar un producto',
-        }
-    )
-    quantity = models.IntegerField(
-        verbose_name="Cantidad",
-        error_messages={
-            'invalid': 'Ingrese una cantidad válida',
-            'null': 'La cantidad es requerida',
-        }
-    )
-    unit_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Precio unitario",
-        error_messages={
-            'invalid': 'Ingrese un precio válido',
-            'null': 'El precio unitario es requerido',
-        }
-    )
-    subtotal = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Subtotal"
-    )
-
-    class Meta:
-        verbose_name = "Detalle de factura"
-        verbose_name_plural = "Detalles de factura"
-
-    def save(self, *args, **kwargs):
-        self.subtotal = self.quantity * self.unit_price
-        super().save(*args, **kwargs)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='details')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.IntegerField()
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.product.name} - {self.quantity}"
+        return f"{self.product.name} - {self.quantity} x {self.unit_price}"
+
+    class Meta:
+        verbose_name = "Detalle de Factura"
+        verbose_name_plural = "Detalles de Factura"
