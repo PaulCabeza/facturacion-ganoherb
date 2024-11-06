@@ -60,8 +60,8 @@
                 <tr>
                     <td class="border px-4 py-2">{{ detail.product.name }}</td>
                     <td class="border px-4 py-2 text-center">{{ detail.quantity }}</td>
-                    <td class="border px-4 py-2 text-right">${{ detail.unit_price }}</td>
-                    <td class="border px-4 py-2 text-right">${{ detail.subtotal }}</td>
+                    <td class="border px-4 py-2 text-right">${{ detail.unit_price|stringformat:".2f" }}</td>
+                    <td class="border px-4 py-2 text-right">${{ detail.subtotal|stringformat:".2f" }}</td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -70,7 +70,7 @@
                 {% endfor %}
                 <tr class="font-bold">
                     <td colspan="3" class="border px-4 py-2 text-right">Total:</td>
-                    <td class="border px-4 py-2 text-right">${{ invoice.total }}</td>
+                    <td class="border px-4 py-2 text-right">${{ invoice.total|stringformat:".2f" }}</td>
                 </tr>
             </tbody>
         </table>
