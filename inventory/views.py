@@ -322,3 +322,6 @@ def validate_invoice_number(request):
     invoice_number = request.GET.get('invoice_number', '')
     exists = Invoice.objects.filter(invoice_number=invoice_number).exists()
     return JsonResponse({'exists': exists})
+
+def access_denied(request):
+    return render(request, 'inventory/access_denied.html')
