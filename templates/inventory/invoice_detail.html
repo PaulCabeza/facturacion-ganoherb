@@ -10,7 +10,7 @@
         <div class="bg-gray-50 p-4 rounded">
             <h2 class="font-bold text-lg mb-2">Información del Cliente</h2>
             <p><span class="font-semibold">Nombre:</span> {{ invoice.customer.name }}</p>
-            <p><span class="font-semibold">Código:</span> {{ invoice.customer.code_id }}</p>
+            <p><span class="font-semibold">Código:</span> {% if invoice.customer.code_id %}{{ invoice.customer.code_id }}{% endif %}</p>
             <p><span class="font-semibold">Dirección:</span> {{ invoice.customer.address }}</p>
             <p><span class="font-semibold">Teléfono:</span> {{ invoice.customer.phone }}</p>
         </div>

@@ -76,7 +76,7 @@
                         {% for invoice in invoices %}
                         <tr class="border-b border-yellow-100">
                             <td class="py-2">{{ invoice.invoice_number }}</td>
-                            <td class="text-right py-2">${{ invoice.total }}</td>
+                            <td class="text-right py-2">${{ invoice.total|stringformat:".2f" }}</td>
                         </tr>
                         {% empty %}
                         <tr>
