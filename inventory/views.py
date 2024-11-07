@@ -360,6 +360,7 @@ def get_customer_details(request, pk):
         'code_id': customer.code_id,
         'address': customer.address,
         'phone': customer.phone,
+        'registration_number': customer.registration_number,
     }
     return JsonResponse(data)
 

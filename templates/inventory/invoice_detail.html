@@ -26,6 +26,7 @@
                 <p><span class="font-semibold">Código:</span> {% if invoice.customer.code_id %}{{ invoice.customer.code_id }}{% endif %}</p>
                 <p><span class="font-semibold">Dirección:</span> {{ invoice.customer.address }}</p>
                 <p><span class="font-semibold">Teléfono:</span> {{ invoice.customer.phone }}</p>
+                <p><span class="font-semibold">N° Registro:</span> {% if invoice.customer.registration_number %}{{ invoice.customer.registration_number }}{% endif %}</p>
             </div>
             <div>
                 <h2 class="font-bold text-lg mb-2">Información de la Factura</h2>

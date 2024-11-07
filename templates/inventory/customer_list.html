@@ -20,6 +20,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° Registro</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                 </tr>
             </thead>
@@ -30,6 +31,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">{% if customer.code_id %}{{ customer.code_id }}{% endif %}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ customer.email }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ customer.phone }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{% if customer.registration_number %}{{ customer.registration_number }}{% endif %}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="{% url 'inventory:customer_update' customer.pk %}" 
                            class="text-indigo-600 hover:text-indigo-900 mr-4">Editar</a>
@@ -39,7 +41,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="px-6 py-4 text-center">No hay clientes registrados</td>
+                    <td colspan="6" class="px-6 py-4 text-center">No hay clientes registrados</td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -94,6 +94,16 @@ class Customer(models.Model):
             'null': 'El NIT es requerido',
         }
     )
+    registration_number = models.CharField(
+        max_length=12,
+        verbose_name="Número de registro",
+        blank=True,
+        null=True,
+        error_messages={
+            'blank': 'El número de registro es requerido',
+            'null': 'El número de registro es requerido',
+        }
+    )
 
     class Meta:
         verbose_name = "Cliente"
