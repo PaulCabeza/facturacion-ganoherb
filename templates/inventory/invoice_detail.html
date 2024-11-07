@@ -30,6 +30,7 @@
             </div>
             <div>
                 <h2 class="font-bold text-lg mb-2">Información de la Factura</h2>
+                <p><span class="font-semibold">Tipo:</span> {% if invoice.type == 'CCF' %}Credito Fiscal{% else %}Consumidor Final{% endif %}</p>
                 <p><span class="font-semibold">Número:</span> {{ invoice.invoice_number }}</p>
                 <p><span class="font-semibold">Fecha:</span> {{ invoice.date|date:"d/m/Y H:i" }}</p>
             </div>

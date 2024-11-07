@@ -29,8 +29,8 @@
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap">{{ product.name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ product.units_per_box }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${{ product.distributor_price }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">${{ product.public_price }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${{ product.distributor_price | stringformat:".2f" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${{ product.public_price | stringformat:".2f" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ product.quantity }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <a href="{% url 'inventory:product_update' product.id %}" class="text-green-600 hover:text-green-900 mr-3">Editar</a>

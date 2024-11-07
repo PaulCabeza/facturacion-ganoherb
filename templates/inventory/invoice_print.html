@@ -1,4 +1,5 @@
 {% load invoice_filters %}
+{% load number_filters %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -56,6 +57,7 @@
                 <h2 class="font-bold text-lg mb-2">Información de la Factura</h2>
                 <p><span class="font-semibold">Número:</span> {{ invoice.invoice_number }}</p>
                 <p><span class="font-semibold">Fecha:</span> {{ invoice.date|date:"d/m/Y H:i" }}</p>
+                <p><span class="font-semibold">Tipo:</span> {% if invoice.type == 'CCF' %}Credito Fiscal{% else %}Consumidor Final{% endif %}</p>
             </div>
         </div>
 
@@ -75,16 +77,16 @@
                     <td class="border px-4 py-2">{{ detail.product.name }}</td>
                     <td class="border px-4 py-2 text-right">
                         {% if invoice.type == 'CCF' %}
-                            ${{ detail.unit_price|divide:1.13|floatformat:3 }}
+                            ${{ detail.unit_price|divide:1.13|stringformat:".2f" }}
                         {% else %}
-                            ${{ detail.unit_price|floatformat:".2f" }}
+                            ${{ detail.unit_price|stringformat:".2f" }}
                         {% endif %}
                     </td>
                     <td class="border px-4 py-2 text-right">
                         {% if invoice.type == 'CCF' %}
-                            ${{ detail.subtotal|divide:1.13|floatformat:3 }}
+                            ${{ detail.subtotal|divide:1.13|stringformat:".2f" }}
                         {% else %}
-                            ${{ detail.subtotal|floatformat:".2f" }}
+                            ${{ detail.subtotal|stringformat:".2f" }}
                         {% endif %}
                     </td>
                 </tr>
@@ -96,16 +98,16 @@
                 {% if invoice.type == 'CCF' %}
                     <tr>
                         <td colspan="3" class="border px-4 py-2 text-right font-bold">Sumas:</td>
-                        <td class="border px-4 py-2 text-right">${{ invoice.total|divide:1.13|floatformat:3 }}</td>
+                        <td class="border px-4 py-2 text-right">${{ invoice.total|divide:1.13|stringformat:".2f" }}</td>
                     </tr>
                     <tr>
                         <td colspan="3" class="border px-4 py-2 text-right font-bold">13% IVA:</td>
-                        <td class="border px-4 py-2 text-right">${{ invoice.total|divide:1.13|multiply:0.13|floatformat:3 }}</td>
+                        <td class="border px-4 py-2 text-right">${{ invoice.total|divide:1.13|multiply:0.13|stringformat:".2f" }}</td>
                     </tr>
                 {% endif %}
                 <tr class="font-bold">
                     <td colspan="3" class="border px-4 py-2 text-right">Venta Total:</td>
-                    <td class="border px-4 py-2 text-right">${{ invoice.total|floatformat:".2f" }}</td>
+                    <td class="border px-4 py-2 text-right">${{ invoice.total|stringformat:".2f" }}</td>
                 </tr>
             </tbody>
         </table>

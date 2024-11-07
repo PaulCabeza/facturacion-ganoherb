@@ -131,6 +131,7 @@ def invoice_create(request):
         # Continuar con la validación normal del formulario
         if form.is_valid():
             invoice = form.save(commit=False)
+            invoice.type = invoice_type  # Asegurarnos de guardar el tipo de factura
             invoice.total = 0
             invoice.save()
             
@@ -282,6 +283,7 @@ def invoice_update(request, pk):
                     invoice.invoice_number = request.POST.get('invoice_number')
                     invoice.date = request.POST.get('date')
                     invoice.customer_id = request.POST.get('customer')
+                    invoice.type = invoice_type  # Asegurarnos de guardar el tipo de factura
                     invoice.save()
                     
                     # Restaurar el inventario anterior

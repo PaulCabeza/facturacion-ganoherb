@@ -17,6 +17,7 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Número de Factura</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
@@ -27,6 +28,7 @@
                 {% for invoice in invoices %}
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap">{{ invoice.invoice_number }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap"> {% if invoice.type == 'CCF' %}Credito Fiscal{% else %}Consumidor Final{% endif %}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ invoice.customer.name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ invoice.date|date:"d/m/Y H:i" }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">${{ invoice.total|stringformat:".2f" }}</td>
