@@ -85,16 +85,24 @@
             <table class="min-w-full bg-white mb-4" id="invoiceDetails">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">Producto</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Cantidad</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Precio Unitario</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Subtotal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">Cantidad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[50%]">Descripción</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">Precio Unitario</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">Ventas Gravadas</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="invoiceDetailsBody">
                     {% for form in formset %}
                         <tr class="formset-row">
+                            <td class="px-6 py-4">
+                                <input type="number" 
+                                       name="{{ form.quantity.html_name }}" 
+                                       id="{{ form.quantity.auto_id }}"
+                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                                       value="{{ form.initial.quantity }}"
+                                       min="1" required>
+                            </td>
                             <td class="px-6 py-4">
                                 <select name="{{ form.product.html_name }}" 
                                         id="{{ form.product.auto_id }}"
@@ -106,14 +114,6 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                            </td>
-                            <td class="px-6 py-4">
-                                <input type="number" 
-                                       name="{{ form.quantity.html_name }}" 
-                                       id="{{ form.quantity.auto_id }}"
-                                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                                       value="{{ form.initial.quantity }}"
-                                       min="1" required>
                             </td>
                             <td class="px-6 py-4">
                                 <input type="number" 
@@ -143,7 +143,7 @@
         <div class="flex justify-end mb-6">
             <div class="bg-gray-50 p-4 rounded-lg shadow-sm w-64">
                 <div class="flex justify-between items-center font-bold text-lg">
-                    <span>Total:</span>
+                    <span>Venta Total:</span>
                     <span>$<span id="invoiceTotal">0.00</span></span>
                 </div>
             </div>

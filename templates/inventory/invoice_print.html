@@ -36,6 +36,7 @@
                 <h2 class="font-bold text-lg mb-2">Información del Cliente</h2>
                 <p><span class="font-semibold">Nombre:</span> {{ invoice.customer.name }}</p>
                 <p><span class="font-semibold">Código:</span> {% if invoice.customer.code_id %}{{ invoice.customer.code_id }}{% endif %}</p>
+                <p><span class="font-semibold">NIT:</span> {% if invoice.customer.nit %}{{ invoice.customer.nit }}{% endif %}</p>
                 <p><span class="font-semibold">Dirección:</span> {{ invoice.customer.address }}</p>
                 <p><span class="font-semibold">Teléfono:</span> {{ invoice.customer.phone }}</p>
                 <p><span class="font-semibold">N° Registro:</span> {% if invoice.customer.registration_number %}{{ invoice.customer.registration_number }}{% endif %}</p>
@@ -50,17 +51,17 @@
         <table class="min-w-full border border-gray-200 mb-8">
             <thead>
                 <tr class="bg-gray-50">
-                    <th class="border px-4 py-2">Producto</th>
-                    <th class="border px-4 py-2">Cantidad</th>
-                    <th class="border px-4 py-2">Precio Unitario</th>
-                    <th class="border px-4 py-2">Subtotal</th>
+                    <th class="border px-4 py-2 w-[10%]">Cantidad</th>
+                    <th class="border px-4 py-2 w-[50%]">Descripción</th>
+                    <th class="border px-4 py-2 w-[15%]">Precio Unitario</th>
+                    <th class="border px-4 py-2 w-[15%]">Ventas Gravadas</th>
                 </tr>
             </thead>
             <tbody>
                 {% for detail in invoice.details.all %}
                 <tr>
-                    <td class="border px-4 py-2">{{ detail.product.name }}</td>
                     <td class="border px-4 py-2 text-center">{{ detail.quantity }}</td>
+                    <td class="border px-4 py-2">{{ detail.product.name }}</td>
                     <td class="border px-4 py-2 text-right">${{ detail.unit_price|stringformat:".2f" }}</td>
                     <td class="border px-4 py-2 text-right">${{ detail.subtotal|stringformat:".2f" }}</td>
                 </tr>
@@ -70,7 +71,7 @@
                 </tr>
                 {% endfor %}
                 <tr class="font-bold">
-                    <td colspan="3" class="border px-4 py-2 text-right">Total:</td>
+                    <td colspan="3" class="border px-4 py-2 text-right">Venta Total:</td>
                     <td class="border px-4 py-2 text-right">${{ invoice.total|stringformat:".2f" }}</td>
                 </tr>
             </tbody>
