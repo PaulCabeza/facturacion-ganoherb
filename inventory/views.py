@@ -227,7 +227,13 @@ def invoice_create(request):
 @transaction.atomic
 def invoice_update(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk)
-    InvoiceDetailFormSet = inlineformset_factory(Invoice, InvoiceDetail, form=InvoiceDetailForm, extra=1)
+    InvoiceDetailFormSet = inlineformset_factory(
+        Invoice, 
+        InvoiceDetail, 
+        form=InvoiceDetailForm, 
+        extra=0,
+        can_delete=True
+    )
     
     if request.method == 'POST':
         form = InvoiceForm(request.POST, instance=invoice)
@@ -268,19 +274,55 @@ def invoice_update(request, pk):
                     total += detail.subtotal
                     detail.save()
                 
+                # Eliminar detalles marcados para eliminar
+                for obj in formset.deleted_objects:
+                    obj.delete()
+                
                 # Actualizar el total de la factura
                 invoice.total = total
                 invoice.save()
                 
                 return redirect('inventory:invoice_detail', pk=invoice.pk)
     else:
-        form = InvoiceForm(instance=invoice)
+        # Inicializar el formulario con los datos de la factura
+        initial_data = {
+            'invoice_number': invoice.invoice_number,
+            'date': invoice.date.strftime('%Y-%m-%dT%H:%M'),  # Formatear la fecha correctamente
+            'customer': invoice.customer.pk
+        }
+        form = InvoiceForm(instance=invoice, initial=initial_data)
         formset = InvoiceDetailFormSet(instance=invoice)
+        
+        # Inicializar los detalles con sus valores correctos
+        for detail_form in formset:
+            if detail_form.instance.pk:
+                detail = detail_form.instance
+                detail_form.fields['product'].initial = detail.product.pk
+                detail_form.fields['quantity'].initial = detail.quantity
+                detail_form.fields['unit_price'].initial = detail.unit_price
+                detail_form.fields['subtotal'].initial = detail.subtotal
+                
+                # También establecer los valores iniciales
+                detail_form.initial = {
+                    'product': detail.product.pk,
+                    'quantity': detail.quantity,
+                    'unit_price': detail.unit_price,
+                    'subtotal': detail.subtotal
+                }
+    
+    print("Debug - Invoice date:", invoice.date)  # Debug
+    for form in formset:
+        if form.instance.pk:
+            print(f"Debug - Detail {form.instance.pk}:")  # Debug
+            print(f"  Product: {form.initial.get('product')}")
+            print(f"  Unit Price: {form.initial.get('unit_price')}")
+            print(f"  Subtotal: {form.initial.get('subtotal')}")
     
     return render(request, 'inventory/invoice_form.html', {
         'form': form,
         'formset': formset,
-        'invoice': invoice
+        'invoice': invoice,
+        'is_update': True
     })
 
 @login_required

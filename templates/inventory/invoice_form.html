@@ -25,8 +25,8 @@
                     Número de Factura
                 </label>
                 <input type="text" name="invoice_number" id="invoice_number"
-                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600 {% if form.invoice_number.errors %}border-red-500{% endif %}"
-                       value="{{ form.invoice_number.value|default:'' }}"
+                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                       value="{{ form.invoice_number.value|default:invoice.invoice_number }}"
                        placeholder="Número de Factura"
                        required>
                 {% if form.invoice_number.errors %}
@@ -40,8 +40,8 @@
                     Fecha
                 </label>
                 <input type="datetime-local" name="date" id="date"
-                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600 {% if form.date.errors %}border-red-500{% endif %}"
-                       value="{{ form.date.value|date:'Y-m-d\TH:i'|default:'' }}"
+                       class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
+                       value="{{ form.initial.date|default:invoice.date|date:'Y-m-d\TH:i' }}"
                        required>
                 {% if form.date.errors %}
                     {% for error in form.date.errors %}
@@ -53,7 +53,18 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="customer">
                     Cliente
                 </label>
-                {{ form.customer }}
+                <select name="customer" id="id_customer"
+                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600">
+                    <option value="">Seleccione un cliente</option>
+                    {% for choice in form.customer.field.choices %}
+                        {% if choice.0 %}
+                            <option value="{{ choice.0 }}" 
+                                    {% if choice.0 == invoice.customer.pk %}selected{% endif %}>
+                                {{ choice.1 }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
                 {% if form.customer.errors %}
                     {% for error in form.customer.errors %}
                         <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
@@ -84,40 +95,40 @@
                 <tbody id="invoiceDetailsBody">
                     {% for form in formset %}
                         <tr class="formset-row">
-                            <td class="px-2 py-4">
-                                {{ form.product }}
-                                {% if form.product.errors %}
-                                    {% for error in form.product.errors %}
-                                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                            <td class="px-6 py-4">
+                                <select name="{{ form.product.html_name }}" 
+                                        id="{{ form.product.auto_id }}"
+                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600">
+                                    {% for choice in form.product.field.choices %}
+                                        <option value="{{ choice.0 }}" 
+                                                {% if choice.0 == form.initial.product %}selected{% endif %}>
+                                            {{ choice.1 }}
+                                        </option>
                                     {% endfor %}
-                                {% endif %}
+                                </select>
                             </td>
                             <td class="px-6 py-4">
-                                <input type="number" name="{{ form.quantity.html_name }}" 
+                                <input type="number" 
+                                       name="{{ form.quantity.html_name }}" 
+                                       id="{{ form.quantity.auto_id }}"
                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                                       value="{{ form.quantity.value|default:'' }}"
+                                       value="{{ form.initial.quantity }}"
                                        min="1" required>
-                                {% if form.quantity.errors %}
-                                    {% for error in form.quantity.errors %}
-                                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
-                                    {% endfor %}
-                                {% endif %}
                             </td>
                             <td class="px-6 py-4">
-                                <input type="number" name="{{ form.unit_price.html_name }}" 
+                                <input type="number" 
+                                       name="{{ form.unit_price.html_name }}" 
+                                       id="{{ form.unit_price.auto_id }}"
                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                                       value="{{ form.unit_price.value|default:'' }}"
+                                       value="{{ form.initial.unit_price|stringformat:'.2f' }}"
                                        step="any" required>
-                                {% if form.unit_price.errors %}
-                                    {% for error in form.unit_price.errors %}
-                                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
-                                    {% endfor %}
-                                {% endif %}
                             </td>
                             <td class="px-6 py-4">
-                                <input type="number" name="{{ form.subtotal.html_name }}" 
+                                <input type="number" 
+                                       name="{{ form.subtotal.html_name }}" 
+                                       id="{{ form.subtotal.auto_id }}"
                                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                                       value="{{ form.subtotal.value|default:'' }}"
+                                       value="{{ form.initial.subtotal|stringformat:'.2f' }}"
                                        readonly>
                             </td>
                             <td class="px-6 py-4">
