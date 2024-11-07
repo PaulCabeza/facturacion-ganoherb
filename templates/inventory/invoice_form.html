@@ -303,104 +303,82 @@
             }
         });
 
-        // Reemplazar el evento submit actual con este:
+        // Reemplazar el evento submit del formulario con este código:
         $('#invoiceForm').on('submit', function(e) {
             e.preventDefault();
             
             // Actualizar índices antes de validar
-            updateFormsetIndex();
-            
-            let isValid = true;
-            let errorMessages = [];
             let validRows = [];
+            let totalForms = 0;
             
-            // Validar cada fila
+            // Recolectar todas las filas válidas
             $('.formset-row').each(function(index) {
                 const row = $(this);
                 const product = row.find('select[name$="-product"]').val();
                 const quantity = row.find('input[name$="-quantity"]').val();
                 const unitPrice = row.find('input[name$="-unit_price"]').val();
+                const subtotal = row.find('input[name$="-subtotal"]').val();
                 
-                // Solo validar filas que tengan al menos un campo lleno
                 if (product && product !== 'None' && quantity && unitPrice) {
                     validRows.push({
-                        index: validRows.length,
+                        row: row,
                         product: product,
                         quantity: quantity,
-                        unitPrice: unitPrice
+                        unitPrice: unitPrice,
+                        subtotal: subtotal
                     });
+                    totalForms++;
                 }
             });
             
-            if (validRows.length === 0) {
-                errorMessages.push("Debe agregar al menos un producto a la factura");
-                isValid = false;
-            } else {
-                // Recrear los campos del formset con solo las filas válidas
-                const tbody = $('#invoiceDetailsBody');
-                const originalFirstRow = tbody.find('.formset-row').first().clone();
-                
-                // Limpiar tbody
-                tbody.empty();
-                
-                // Agregar filas válidas
-                validRows.forEach((rowData, index) => {
-                    const newRow = originalFirstRow.clone();
-                    
-                    // Actualizar campos
-                    newRow.find('select[name$="-product"]')
-                        .attr('name', `form-${index}-product`)
-                        .attr('id', `id_form-${index}-product`)
-                        .val(rowData.product);
-                        
-                    newRow.find('input[name$="-quantity"]')
-                        .attr('name', `form-${index}-quantity`)
-                        .attr('id', `id_form-${index}-quantity`)
-                        .val(rowData.quantity);
-                        
-                    newRow.find('input[name$="-unit_price"]')
-                        .attr('name', `form-${index}-unit_price`)
-                        .attr('id', `id_form-${index}-unit_price`)
-                        .val(rowData.unitPrice);
-                        
-                    // Calcular y establecer subtotal
-                    const subtotal = (parseFloat(rowData.quantity) * parseFloat(rowData.unitPrice)).toFixed(2);
-                    newRow.find('input[name$="-subtotal"]')
-                        .attr('name', `form-${index}-subtotal`)
-                        .attr('id', `id_form-${index}-subtotal`)
-                        .val(subtotal);
-                        
-                    tbody.append(newRow);
-                });
-                
-                // Actualizar TOTAL_FORMS con el número correcto de filas válidas
-                $('#id_form-TOTAL_FORMS').val(validRows.length);
-                
-                console.log('Valid rows:', validRows.length);
-                console.log('Form data before submit:');
-                validRows.forEach((row, index) => {
-                    console.log(`Row ${index}:`, row);
-                });
-            }
+            // Actualizar TOTAL_FORMS
+            $('#id_form-TOTAL_FORMS').val(totalForms);
             
-            if (isValid) {
-                console.log('Form is valid, submitting...');
-                this.submit();
-            } else {
-                // Mostrar errores
-                const errorDiv = $('<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>');
-                errorMessages.forEach(function(message) {
-                    errorDiv.append($('<p></p>').text(message));
-                });
+            // Actualizar índices y nombres de campos
+            validRows.forEach((item, index) => {
+                const row = item.row;
                 
+                // Actualizar product
+                row.find('select[name$="-product"]')
+                    .attr('name', `form-${index}-product`)
+                    .attr('id', `id_form-${index}-product`);
+                
+                // Actualizar quantity
+                row.find('input[name$="-quantity"]')
+                    .attr('name', `form-${index}-quantity`)
+                    .attr('id', `id_form-${index}-quantity`);
+                
+                // Actualizar unit_price
+                row.find('input[name$="-unit_price"]')
+                    .attr('name', `form-${index}-unit_price`)
+                    .attr('id', `id_form-${index}-unit_price`);
+                
+                // Actualizar subtotal
+                row.find('input[name$="-subtotal"]')
+                    .attr('name', `form-${index}-subtotal`)
+                    .attr('id', `id_form-${index}-subtotal`);
+            });
+            
+            if (validRows.length === 0) {
+                const errorDiv = $('<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"><p>Debe agregar al menos un producto a la factura</p></div>');
                 $('.error-messages').remove();
                 errorDiv.addClass('error-messages');
                 $('#invoiceForm').prepend(errorDiv);
-                
-                $('html, body').animate({
-                    scrollTop: errorDiv.offset().top - 100
-                }, 500);
+                return;
             }
+            
+            // Log para debugging
+            console.log('=== FORM DATA BEFORE SUBMIT ===');
+            console.log('Total forms:', totalForms);
+            validRows.forEach((item, index) => {
+                console.log(`Row ${index}:`, item);
+            });
+            
+            // Asegurarnos de que todos los campos estén habilitados
+            $('select, input').prop('disabled', false);
+            
+            // Enviar el formulario
+            this.submit();
         });
 
         // Inicializar el management form
@@ -419,6 +397,17 @@
 
         // Calcular el total inicial cuando se carga la página
         updateInvoiceTotal();
+
+        // Calcular subtotales iniciales y actualizar total
+        $('.formset-row').each(function() {
+            calculateSubtotal($(this));
+        });
+        updateInvoiceTotal();
+
+        // Si es una actualización, mostrar los detalles del cliente
+        if ($('#id_customer').val()) {
+            $('#id_customer').trigger('change');
+        }
     });
 
     // Agregar esta función después de calculateSubtotal
