@@ -284,13 +284,22 @@ def invoice_update(request, pk):
                 
                 return redirect('inventory:invoice_detail', pk=invoice.pk)
     else:
+        # Formatear la fecha correctamente para el input datetime-local
+        formatted_date = invoice.date.strftime('%Y-%m-%dT%H:%M') if invoice.date else None
+        
         # Inicializar el formulario con los datos de la factura
         initial_data = {
             'invoice_number': invoice.invoice_number,
-            'date': invoice.date.strftime('%Y-%m-%dT%H:%M'),  # Formatear la fecha correctamente
+            'date': formatted_date,
             'customer': invoice.customer.pk
         }
         form = InvoiceForm(instance=invoice, initial=initial_data)
+        
+        # Forzar el valor inicial del cliente
+        form.fields['customer'].initial = invoice.customer.pk
+        # Forzar el valor inicial de la fecha
+        form.fields['date'].initial = formatted_date
+        
         formset = InvoiceDetailFormSet(instance=invoice)
         
         # Inicializar los detalles con sus valores correctos
@@ -302,7 +311,6 @@ def invoice_update(request, pk):
                 detail_form.fields['unit_price'].initial = detail.unit_price
                 detail_form.fields['subtotal'].initial = detail.subtotal
                 
-                # También establecer los valores iniciales
                 detail_form.initial = {
                     'product': detail.product.pk,
                     'quantity': detail.quantity,
@@ -310,19 +318,13 @@ def invoice_update(request, pk):
                     'subtotal': detail.subtotal
                 }
     
-    print("Debug - Invoice date:", invoice.date)  # Debug
-    for form in formset:
-        if form.instance.pk:
-            print(f"Debug - Detail {form.instance.pk}:")  # Debug
-            print(f"  Product: {form.initial.get('product')}")
-            print(f"  Unit Price: {form.initial.get('unit_price')}")
-            print(f"  Subtotal: {form.initial.get('subtotal')}")
-    
     return render(request, 'inventory/invoice_form.html', {
         'form': form,
         'formset': formset,
         'invoice': invoice,
-        'is_update': True
+        'is_update': True,
+        'selected_customer': invoice.customer.pk,
+        'formatted_date': formatted_date
     })
 
 @login_required

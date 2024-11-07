@@ -41,7 +41,7 @@
                 </label>
                 <input type="datetime-local" name="date" id="date"
                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                       value="{{ form.initial.date|default:invoice.date|date:'Y-m-d\TH:i' }}"
+                       value="{{ formatted_date }}"
                        required>
                 {% if form.date.errors %}
                     {% for error in form.date.errors %}
@@ -59,7 +59,7 @@
                     {% for choice in form.customer.field.choices %}
                         {% if choice.0 %}
                             <option value="{{ choice.0 }}" 
-                                    {% if choice.0 == invoice.customer.pk %}selected{% endif %}>
+                                    {% if choice.0 == form.initial.customer %}selected{% endif %}>
                                 {{ choice.1 }}
                             </option>
                         {% endif %}
