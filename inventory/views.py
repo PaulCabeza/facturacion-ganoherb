@@ -109,21 +109,33 @@ def invoice_create(request):
     )
     
     if request.method == 'POST':
-        print("\n=== DEBUG POST DATA ===")
-        for key, value in request.POST.items():
-            print(f"{key}: {value}")
-        print("======================\n")
-        
         form = InvoiceForm(request.POST)
+        formset = InvoiceDetailFormSet(request.POST)
         
-        # Obtener el número total de formularios
-        total_forms = int(request.POST.get('form-TOTAL_FORMS', 0))
-        print(f"Total forms received: {total_forms}")
+        # Validación manual del tipo de factura y número de registro
+        invoice_type = request.POST.get('type')
+        customer_id = request.POST.get('customer')
         
+        try:
+            customer = Customer.objects.get(pk=customer_id) if customer_id else None
+            if invoice_type == 'CCF' and customer and not customer.registration_number:
+                return render(request, 'inventory/invoice_form.html', {
+                    'form': form,
+                    'formset': formset,
+                    'form_errors': ['Para Comprobante de Crédito Fiscal, el cliente debe tener número de registro'],
+                    'formatted_date': request.POST.get('date')
+                })
+        except Customer.DoesNotExist:
+            pass
+        
+        # Continuar con la validación normal del formulario
         if form.is_valid():
             invoice = form.save(commit=False)
             invoice.total = 0
             invoice.save()
+            
+            # Obtener el número total de formularios
+            total_forms = int(request.POST.get('form-TOTAL_FORMS', 0))
             
             total = 0
             details_to_save = []
@@ -156,7 +168,7 @@ def invoice_create(request):
                             invoice.delete()
                             return render(request, 'inventory/invoice_form.html', {
                                 'form': form,
-                                'formset': InvoiceDetailFormSet(request.POST),
+                                'formset': formset,
                                 'form_errors': [error_msg]
                             })
                         
@@ -185,7 +197,7 @@ def invoice_create(request):
                 invoice.delete()
                 return render(request, 'inventory/invoice_form.html', {
                     'form': form,
-                    'formset': InvoiceDetailFormSet(request.POST),
+                    'formset': formset,
                     'form_errors': [error_msg]
                 })
             
@@ -211,8 +223,9 @@ def invoice_create(request):
             print("\nForm errors:", form.errors)
             return render(request, 'inventory/invoice_form.html', {
                 'form': form,
-                'formset': InvoiceDetailFormSet(request.POST),
-                'form_errors': form.errors
+                'formset': formset,
+                'form_errors': form.errors,
+                'formatted_date': request.POST.get('date')
             })
     else:
         form = InvoiceForm(initial={'date': timezone.now()})
@@ -241,115 +254,117 @@ def invoice_update(request, pk):
     formatted_date = invoice.date.strftime('%Y-%m-%dT%H:%M') if invoice.date else None
     
     if request.method == 'POST':
-        print("\n=== DEBUG POST DATA ===")
-        for key, value in request.POST.items():
-            print(f"{key}: {value}")
-        print("======================\n")
+        form = InvoiceForm(request.POST, instance=invoice)
+        formset = InvoiceDetailFormSet(request.POST, instance=invoice)
+        
+        # Validación manual del tipo de factura y número de registro
+        invoice_type = request.POST.get('type')
+        customer_id = request.POST.get('customer')
         
         try:
-            with transaction.atomic():
-                # Actualizar la factura principal
-                invoice.invoice_number = request.POST.get('invoice_number')
-                invoice.date = request.POST.get('date')
-                invoice.customer_id = request.POST.get('customer')
-                invoice.save()
-                
-                # Restaurar el inventario anterior
-                for detail in invoice.details.all():
-                    product = detail.product
-                    product.quantity += detail.quantity
-                    product.save()
-                    print(f"Restored stock for {product.name}: {product.quantity}")
-                
-                # Eliminar todos los detalles anteriores
-                invoice.details.all().delete()
-                
-                # Procesar los nuevos detalles
-                total = 0
-                total_forms = int(request.POST.get('form-TOTAL_FORMS', 0))
-                
-                for i in range(total_forms):
-                    product_id = request.POST.get(f'form-{i}-product')
-                    quantity = request.POST.get(f'form-{i}-quantity')
-                    unit_price = request.POST.get(f'form-{i}-unit_price')
+            customer = Customer.objects.get(pk=customer_id) if customer_id else None
+            if invoice_type == 'CCF' and customer and not customer.registration_number:
+                return render(request, 'inventory/invoice_form.html', {
+                    'form': form,
+                    'formset': formset,
+                    'form_errors': ['Para Comprobante de Crédito Fiscal, el cliente debe tener número de registro'],
+                    'invoice': invoice,
+                    'formatted_date': formatted_date,
+                    'is_update': True
+                })
+        except Customer.DoesNotExist:
+            pass
+            
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Actualizar la factura principal
+                    invoice.invoice_number = request.POST.get('invoice_number')
+                    invoice.date = request.POST.get('date')
+                    invoice.customer_id = request.POST.get('customer')
+                    invoice.save()
                     
-                    if product_id and quantity and unit_price and product_id != 'None':
-                        product = Product.objects.get(pk=product_id)
-                        quantity = int(quantity)
-                        unit_price = float(unit_price)
-                        
-                        # Verificar stock
-                        if product.quantity < quantity:
-                            raise ValidationError(f"No hay suficiente stock del producto {product.name}. Stock actual: {product.quantity}")
-                        
-                        # Crear detalle
-                        subtotal = quantity * unit_price
-                        detail = InvoiceDetail.objects.create(
-                            invoice=invoice,
-                            product=product,
-                            quantity=quantity,
-                            unit_price=unit_price,
-                            subtotal=subtotal
-                        )
-                        
-                        # Actualizar stock
-                        product.quantity -= quantity
+                    # Restaurar el inventario anterior
+                    for detail in invoice.details.all():
+                        product = detail.product
+                        product.quantity += detail.quantity
                         product.save()
+                        print(f"Restored stock for {product.name}: {product.quantity}")
+                    
+                    # Eliminar todos los detalles anteriores
+                    invoice.details.all().delete()
+                    
+                    # Procesar los nuevos detalles
+                    total = 0
+                    total_forms = int(request.POST.get('form-TOTAL_FORMS', 0))
+                    
+                    for i in range(total_forms):
+                        product_id = request.POST.get(f'form-{i}-product')
+                        quantity = request.POST.get(f'form-{i}-quantity')
+                        unit_price = request.POST.get(f'form-{i}-unit_price')
                         
-                        total += subtotal
-                        print(f"Saved detail: {product.name}, quantity: {quantity}, price: {unit_price}")
-                
-                if total == 0:
-                    raise ValidationError("Debe agregar al menos un producto a la factura")
-                
-                # Actualizar el total de la factura
-                invoice.total = total
-                invoice.save()
-                
-                print(f"Invoice saved with total: {total}")
-                return redirect('inventory:invoice_detail', pk=invoice.pk)
-                
-        except ValidationError as e:
-            form = InvoiceForm(instance=invoice)
-            formset = InvoiceDetailFormSet(instance=invoice)
+                        if product_id and quantity and unit_price and product_id != 'None':
+                            product = Product.objects.get(pk=product_id)
+                            quantity = int(quantity)
+                            unit_price = float(unit_price)
+                            
+                            # Verificar stock
+                            if product.quantity < quantity:
+                                raise ValidationError(f"No hay suficiente stock del producto {product.name}. Stock actual: {product.quantity}")
+                            
+                            # Crear detalle
+                            subtotal = quantity * unit_price
+                            detail = InvoiceDetail.objects.create(
+                                invoice=invoice,
+                                product=product,
+                                quantity=quantity,
+                                unit_price=unit_price,
+                                subtotal=subtotal
+                            )
+                            
+                            # Actualizar stock
+                            product.quantity -= quantity
+                            product.save()
+                            
+                            total += subtotal
+                            print(f"Saved detail: {product.name}, quantity: {quantity}, price: {unit_price}")
+                    
+                    if total == 0:
+                        raise ValidationError("Debe agregar al menos un producto a la factura")
+                    
+                    # Actualizar el total de la factura
+                    invoice.total = total
+                    invoice.save()
+                    
+                    print(f"Invoice saved with total: {total}")
+                    return redirect('inventory:invoice_detail', pk=invoice.pk)
+            except ValidationError as e:
+                return render(request, 'inventory/invoice_form.html', {
+                    'form': form,
+                    'formset': formset,
+                    'invoice': invoice,
+                    'form_errors': [str(e)],
+                    'formatted_date': formatted_date,
+                    'is_update': True
+                })
+        else:
             return render(request, 'inventory/invoice_form.html', {
                 'form': form,
                 'formset': formset,
                 'invoice': invoice,
-                'form_errors': [str(e)],
+                'form_errors': form.errors,
                 'formatted_date': formatted_date,
-                'is_update': True,
-                'selected_customer': invoice.customer.pk
+                'is_update': True
             })
     else:
         form = InvoiceForm(instance=invoice)
         formset = InvoiceDetailFormSet(instance=invoice)
-        
-        # Asegurarnos de que los valores iniciales estén correctos
-        form.initial = {
-            'invoice_number': invoice.invoice_number,
-            'date': formatted_date,
-            'customer': invoice.customer.pk
-        }
-        
-        # Inicializar los detalles con sus valores correctos
-        for detail_form in formset:
-            if detail_form.instance.pk:
-                detail = detail_form.instance
-                detail_form.initial = {
-                    'product': detail.product.pk,
-                    'quantity': detail.quantity,
-                    'unit_price': detail.unit_price,
-                    'subtotal': detail.subtotal
-                }
-                print(f"Initial detail data: {detail_form.initial}")
     
     return render(request, 'inventory/invoice_form.html', {
         'form': form,
         'formset': formset,
         'invoice': invoice,
         'is_update': True,
-        'selected_customer': invoice.customer.pk,
         'formatted_date': formatted_date
     })
 

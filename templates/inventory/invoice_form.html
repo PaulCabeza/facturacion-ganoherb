@@ -41,10 +41,32 @@
                 </label>
                 <input type="datetime-local" name="date" id="date"
                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                       value="{{ formatted_date|default:'' }}"
+                       value="{{ formatted_date }}"
                        required>
                 {% if form.date.errors %}
                     {% for error in form.date.errors %}
+                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    Tipo de Factura
+                </label>
+                <div class="mt-2 space-y-2">
+                    <div class="flex items-center">
+                        <input type="radio" name="type" value="FCC" id="type_fcc" 
+                               class="mr-2" {% if not form.type.value or form.type.value == 'FCC' %}checked{% endif %}>
+                        <label for="type_fcc">Factura Consumidor Final</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="radio" name="type" value="CCF" id="type_ccf" 
+                               class="mr-2" {% if form.type.value == 'CCF' %}checked{% endif %}>
+                        <label for="type_ccf">Comprobante de Crédito Fiscal</label>
+                    </div>
+                </div>
+                {% if form.type.errors %}
+                    {% for error in form.type.errors %}
                         <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
                     {% endfor %}
                 {% endif %}
@@ -78,6 +100,7 @@
             <p><span class="font-semibold">Código:</span> <span id="customerCode"></span></p>
             <p><span class="font-semibold">Dirección:</span> <span id="customerAddress"></span></p>
             <p><span class="font-semibold">Teléfono:</span> <span id="customerPhone"></span></p>
+            <p><span class="font-semibold">N° Registro:</span> <span id="customerRegistration"></span></p>
         </div>
         
         <h2 class="text-xl font-bold mb-4">Detalles de la Factura</h2>
@@ -210,14 +233,38 @@
                     url: '/inventory/get_customer_details/' + customerId + '/',
                     type: 'GET',
                     success: function(data) {
-                        $('#customerCode').text(data.code_id);
-                        $('#customerAddress').text(data.address);
-                        $('#customerPhone').text(data.phone);
+                        $('#customerCode').text(data.code_id || '');
+                        $('#customerAddress').text(data.address || '');
+                        $('#customerPhone').text(data.phone || '');
+                        $('#customerRegistration').text(data.registration_number || '');
                         $('#customerDetails').removeClass('hidden');
+                        
+                        // Verificar tipo de factura y número de registro
+                        if ($('#type_ccf').is(':checked') && !data.registration_number) {
+                            alert('Advertencia: Este cliente no tiene número de registro. No podrá emitir CCF.');
+                        }
                     }
                 });
             } else {
                 $('#customerDetails').addClass('hidden');
+            }
+        });
+
+        // Agregar validación al cambiar tipo de factura
+        $('input[name="type"]').change(function() {
+            if ($(this).val() === 'CCF') {
+                var customerId = $('#id_customer').val();
+                if (customerId) {
+                    $.ajax({
+                        url: '/inventory/get_customer_details/' + customerId + '/',
+                        type: 'GET',
+                        success: function(data) {
+                            if (!data.registration_number) {
+                                alert('Este cliente no tiene número de registro. No podrá emitir CCF.');
+                            }
+                        }
+                    });
+                }
             }
         });
 

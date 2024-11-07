@@ -113,6 +113,11 @@ class Customer(models.Model):
         return self.name
 
 class Invoice(models.Model):
+    INVOICE_TYPES = [
+        ('FCC', 'Factura Consumidor Final'),
+        ('CCF', 'Comprobante de Crédito Fiscal'),
+    ]
+    
     invoice_number = models.CharField(
         max_length=20,
         unique=True,
@@ -122,6 +127,12 @@ class Invoice(models.Model):
             'blank': 'El número de factura es requerido',
             'null': 'El número de factura es requerido',
         }
+    )
+    type = models.CharField(
+        max_length=3,
+        choices=INVOICE_TYPES,
+        default='FCC',
+        verbose_name="Tipo de Factura"
     )
     customer = models.ForeignKey(
         Customer,

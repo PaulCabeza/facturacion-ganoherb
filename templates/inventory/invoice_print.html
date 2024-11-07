@@ -1,9 +1,10 @@
+{% load invoice_filters %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factura #{{ invoice.invoice_number }}</title>
+    <title>{% if invoice.type == 'CCF' %}Comprobante de Crédito Fiscal{% else %}Factura Consumidor Final{% endif %} #{{ invoice.invoice_number }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -18,17 +19,27 @@
     </style>
 </head>
 <body class="bg-white">
-    <div class="no-print mb-4">
+    <div class="no-print mb-4 space-x-1">
         <button onclick="window.print()" 
                 class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
             Imprimir Factura
         </button>
+        <a href="{% url 'inventory:invoice_list' %}" 
+           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block">
+            Volver a la lista
+        </a>        
     </div>
 
     <div class="max-w-4xl mx-auto">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold">GANOHERB El Salvador</h1>
-            <p class="text-gray-600">Factura de Venta</p>
+            <h1 class="text-3xl font-bold">
+                {% if invoice.type == 'CCF' %}
+                    Comprobante de Crédito Fiscal
+                {% else %}
+                    Factura de Consumidor Final
+                {% endif %}
+            </h1>
+            <p class="text-gray-600">GANOHERB El Salvador</p>
         </div>
 
         <div class="grid grid-cols-2 gap-8 mb-8">
@@ -62,17 +73,39 @@
                 <tr>
                     <td class="border px-4 py-2 text-center">{{ detail.quantity }}</td>
                     <td class="border px-4 py-2">{{ detail.product.name }}</td>
-                    <td class="border px-4 py-2 text-right">${{ detail.unit_price|stringformat:".2f" }}</td>
-                    <td class="border px-4 py-2 text-right">${{ detail.subtotal|stringformat:".2f" }}</td>
+                    <td class="border px-4 py-2 text-right">
+                        {% if invoice.type == 'CCF' %}
+                            ${{ detail.unit_price|divide:1.13|floatformat:3 }}
+                        {% else %}
+                            ${{ detail.unit_price|floatformat:".2f" }}
+                        {% endif %}
+                    </td>
+                    <td class="border px-4 py-2 text-right">
+                        {% if invoice.type == 'CCF' %}
+                            ${{ detail.subtotal|divide:1.13|floatformat:3 }}
+                        {% else %}
+                            ${{ detail.subtotal|floatformat:".2f" }}
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
                     <td colspan="4" class="border px-4 py-2 text-center">No hay detalles disponibles</td>
                 </tr>
                 {% endfor %}
+                {% if invoice.type == 'CCF' %}
+                    <tr>
+                        <td colspan="3" class="border px-4 py-2 text-right font-bold">Sumas:</td>
+                        <td class="border px-4 py-2 text-right">${{ invoice.total|divide:1.13|floatformat:3 }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="border px-4 py-2 text-right font-bold">13% IVA:</td>
+                        <td class="border px-4 py-2 text-right">${{ invoice.total|divide:1.13|multiply:0.13|floatformat:3 }}</td>
+                    </tr>
+                {% endif %}
                 <tr class="font-bold">
                     <td colspan="3" class="border px-4 py-2 text-right">Venta Total:</td>
-                    <td class="border px-4 py-2 text-right">${{ invoice.total|stringformat:".2f" }}</td>
+                    <td class="border px-4 py-2 text-right">${{ invoice.total|floatformat:".2f" }}</td>
                 </tr>
             </tbody>
         </table>
