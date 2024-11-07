@@ -219,9 +219,11 @@ def invoice_create(request):
         formset = InvoiceDetailFormSet()
     
     return render(request, 'inventory/invoice_form.html', {
-        'form': form, 
+        'form': form,
         'formset': formset,
-        'form_errors': []
+        'form_errors': [],
+        'is_update': False,
+        'formatted_date': timezone.now().strftime('%Y-%m-%dT%H:%M')
     })
 
 @login_required

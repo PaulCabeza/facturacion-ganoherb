@@ -26,7 +26,7 @@
                 </label>
                 <input type="text" name="invoice_number" id="invoice_number"
                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                       value="{{ form.invoice_number.value|default:invoice.invoice_number }}"
+                       value="{{ form.invoice_number.value|default:'' }}"
                        placeholder="Número de Factura"
                        required>
                 {% if form.invoice_number.errors %}
@@ -41,7 +41,7 @@
                 </label>
                 <input type="datetime-local" name="date" id="date"
                        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                       value="{{ formatted_date }}"
+                       value="{{ formatted_date|default:'' }}"
                        required>
                 {% if form.date.errors %}
                     {% for error in form.date.errors %}
@@ -161,7 +161,7 @@
             </a>
             <button type="submit" 
                     class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                {% if invoice %}Actualizar Factura{% else %}Guardar Factura{% endif %}
+                {% if is_update %}Actualizar Factura{% else %}Guardar Factura{% endif %}
             </button>
         </div>
     </form>
