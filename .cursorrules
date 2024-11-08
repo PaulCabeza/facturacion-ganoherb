@@ -26,3 +26,10 @@ Swap Image: 512 MB
 - Root directory: /opt/projects/facturacion-ganoherb
 - Runtime: Python 3.12
 - Python environment: venv at /opt/projects/facturacion-ganoherb/venv
+- Django run command: gunicorn ganoherb_inventory_billing.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --access-logfile - \
+    --error-logfile - \
+    --access-logformat '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+- Environment variables manager: python-decouple
+- Web server: gunicorn

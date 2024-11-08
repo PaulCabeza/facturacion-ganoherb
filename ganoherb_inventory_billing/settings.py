@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os  # Añade esta línea al principio del archivo
 
 from pathlib import Path
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)oc#m-^9e^%ze3&)l^&!wc8bcx5xx)9)(h3esml%enunhas7j0'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['45.33.14.154', 'localhost', '127.0.0.1', 'facturacion-ganoherb.site']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=['45.33.14.154', 'localhost', '127.0.0.1', 'facturacion-ganoherb.site'], cast=Csv())
 
 # Add these new settings
 CSRF_TRUSTED_ORIGINS = [
