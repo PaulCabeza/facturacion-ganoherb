@@ -1,0 +1,54 @@
+# 1. Create the service file in the correct location
+sudo cp /opt/projects/facturacion-ganoherb/config/ganoherb.service /etc/systemd/system/ganoherb.service
+
+# 2. Set proper permissions for the service file
+sudo chmod 644 /etc/systemd/system/ganoherb.service
+
+# 3. Reload systemd to recognize the new service
+sudo systemctl daemon-reload
+
+# 4. Enable the service to start on boot
+sudo systemctl enable ganoherb.service
+
+# 5. Start the service
+sudo systemctl start ganoherb.service
+
+# 6. Check the status to ensure it's running
+sudo systemctl status ganoherb.service
+
+# --- Useful commands for managing the service ---
+
+# To stop the service:
+# sudo systemctl stop ganoherb.service
+
+# To restart the service:
+# sudo systemctl restart ganoherb.service
+
+# To view logs:
+# sudo journalctl -u ganoherb.service
+
+# To view real-time logs:
+# sudo journalctl -u ganoherb.service -f
+
+# To check for any errors:
+# sudo journalctl -u ganoherb.service -p err
+
+[Unit]
+Description=Ganoherb Facturacion Gunicorn Daemon
+After=network.target
+
+[Service]
+User=root
+Group=www-data
+WorkingDirectory=/opt/projects/facturacion-ganoherb
+Environment="PATH=/opt/projects/facturacion-ganoherb/venv/bin"
+ExecStart=/opt/projects/facturacion-ganoherb/venv/bin/gunicorn ganoherb_inventory_billing.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --reload \
+    --access-logfile - \
+    --error-logfile - \
+    --access-logformat '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+
+[Install]
+WantedBy=multi-user.target
+
