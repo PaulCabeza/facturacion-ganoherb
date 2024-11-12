@@ -329,6 +329,9 @@
             newRow.find('.border-red-500').removeClass('border-red-500');
             newRow.find('.error-message').remove();
             
+            // Asegurarnos que el botón de eliminar tenga la clase correcta
+            newRow.find('button').addClass('delete-row');
+            
             // Insertar nueva fila
             lastRow.after(newRow);
             
@@ -342,11 +345,13 @@
         });
 
         // Función mejorada para eliminar fila
-        $('.delete-row').click(function() {
+        $(document).on('click', '.delete-row', function() {
             if ($('.formset-row').length > 1) {
                 $(this).closest('tr').remove();
                 updateFormsetIndex();
                 updateInvoiceTotal();
+            } else {
+                alert('Debe mantener al menos una línea de producto');
             }
         });
 
