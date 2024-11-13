@@ -8,14 +8,56 @@
     <title>{% if invoice.type == 'CCF' %}Comprobante de Crédito Fiscal{% else %}Factura Consumidor Final{% endif %} #{{ invoice.invoice_number }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Reducir el tamaño de la letra al 70% */
+        body {
+            font-size: 70%;
+        }
+        
         @media print {
             .no-print {
                 display: none;
             }
+            
+            /* Establecer márgenes de 1cm para impresión */
+            @page {
+                margin: 1cm;
+            }
+            
             body {
                 margin: 0;
-                padding: 2cm;
+                font-size: 85%;
             }
+            
+            /* Hacer que la tabla use todo el ancho disponible */
+            table {
+                width: 100% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            
+            /* Ajustar el ancho de las columnas de la tabla */
+            .col-quantity {
+                width: 10% !important;
+            }
+            
+            .col-description {
+                width: 50% !important;
+            }
+            
+            .col-price {
+                width: 20% !important;
+            }
+            
+            .col-total {
+                width: 20% !important;
+            }
+        }
+        
+        /* Estilos para la tabla fuera de la impresión */
+        table {
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
@@ -30,19 +72,17 @@
             Volver a la lista
         </a>        
     </div>
-
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold">
-                {% if invoice.type == 'CCF' %}
-                    Comprobante de Crédito Fiscal
-                {% else %}
-                    Factura de Consumidor Final
-                {% endif %}
-            </h1>
-            <p class="text-gray-600">GANOHERB El Salvador</p>
-        </div>
-
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="max-w-4xl mx-auto">        
         <div class="grid grid-cols-2 gap-8 mb-8">
             <div>
                 <h2 class="font-bold text-lg mb-2">Información del Cliente</h2>
@@ -61,13 +101,13 @@
             </div>
         </div>
 
-        <table class="min-w-full border border-gray-200 mb-8">
+        <table class="w-full border border-gray-200 mb-8">
             <thead>
                 <tr class="bg-gray-50">
-                    <th class="border px-4 py-2 w-[10%]">Cantidad</th>
-                    <th class="border px-4 py-2 w-[50%]">Descripción</th>
-                    <th class="border px-4 py-2 w-[15%]">Precio Unitario</th>
-                    <th class="border px-4 py-2 w-[15%]">Ventas Gravadas</th>
+                    <th class="border px-4 py-2 col-quantity">Cantidad</th>
+                    <th class="border px-4 py-2 col-description">Descripción</th>
+                    <th class="border px-4 py-2 col-price">Precio Unitario</th>
+                    <th class="border px-4 py-2 col-total">Ventas Gravadas</th>
                 </tr>
             </thead>
             <tbody>
@@ -110,18 +150,7 @@
                     <td class="border px-4 py-2 text-right">${{ invoice.total|stringformat:".2f" }}</td>
                 </tr>
             </tbody>
-        </table>
-
-        <div class="mt-16 grid grid-cols-2 gap-8">
-            <div class="text-center">
-                <div class="border-t border-gray-400 w-48 mx-auto"></div>
-                <p class="mt-2">Firma del Cliente</p>
-            </div>
-            <div class="text-center">
-                <div class="border-t border-gray-400 w-48 mx-auto"></div>
-                <p class="mt-2">Firma Autorizada</p>
-            </div>
-        </div>
+        </table>        
     </div>
 </body>
 </html>
