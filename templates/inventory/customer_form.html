@@ -1,37 +1,122 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}{% if customer %}Actualizar Clienter{% else %}Crear Cliente{% endif %}{% endblock %}
+{% block title %}{% if customer %}Editar Cliente{% else %}Crear Cliente{% endif %}{% endblock %}
 
 {% block content %}
-<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <h1 class="text-2xl font-bold mb-6">{% if customer %}Actualizar Cliente{% else %}Crear Cliente{% endif %}</h1>
-
-    <form method="post" class="max-w-lg">
-        {% csrf_token %}
-        {% for field in form %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <h1 class="text-2xl font-bold mb-6">{% if customer %}Editar Cliente{% else %}Crear Cliente{% endif %}</h1>
+        
+        <form method="post">
+            {% csrf_token %}
+            
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
-                    {{ field.label }}
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.name.id_for_label }}">
+                    Nombre <span class="text-red-500">*</span>
                 </label>
-                <input type="{{ field.field.widget.input_type }}" 
-                       name="{{ field.name }}"
-                       id="{{ field.id_for_label }}"
-                       {% if field.value %}value="{{ field.value }}"{% endif %}
-                       class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-green-600"
-                       {% if field.field.required %}required{% endif %}
-                       placeholder="{{ field.label }}">
-                {% if field.errors %}
-                    {% for error in field.errors %}
-                        <p class="text-red-500 text-xs italic mt-1">{{ error }}</p>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    {% for error in form.name.errors %}
+                        <p class="text-red-500 text-xs italic">{{ error }}</p>
                     {% endfor %}
                 {% endif %}
             </div>
-        {% endfor %}
-        <div class="flex items-center justify-between mt-6">
-            <button class="px-6 py-2 text-white bg-green-600 rounded-lg hover:bg-green-900" type="submit">
-                {% if distributor %}Actualizar Cliente{% else %}Crear Cliente{% endif %}
-            </button>
-        </div>
-    </form>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.code_id.id_for_label }}">
+                    Código de distribuidor
+                </label>
+                {{ form.code_id }}
+                {% if form.code_id.errors %}
+                    {% for error in form.code_id.errors %}
+                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.email.id_for_label }}">
+                    Correo electrónico
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.phone.id_for_label }}">
+                    Teléfono <span class="text-red-500">*</span>
+                </label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    {% for error in form.phone.errors %}
+                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.address.id_for_label }}">
+                    Dirección <span class="text-red-500">*</span>
+                </label>
+                {{ form.address }}
+                {% if form.address.errors %}
+                    {% for error in form.address.errors %}
+                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.nit.id_for_label }}">
+                    NIT
+                </label>
+                {{ form.nit }}
+                {% if form.nit.errors %}
+                    {% for error in form.nit.errors %}
+                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ form.registration_number.id_for_label }}">
+                    Número de registro
+                </label>
+                {{ form.registration_number }}
+                {% if form.registration_number.errors %}
+                    {% for error in form.registration_number.errors %}
+                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    {% if customer %}Actualizar{% else %}Guardar{% endif %}
+                </button>
+                <a href="{% url 'inventory:customer_list' %}" 
+                   class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
+
+<style>
+    input[type="text"], 
+    input[type="email"], 
+    textarea {
+        @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
+    }
+    input[type="text"]:focus, 
+    input[type="email"]:focus, 
+    textarea:focus {
+        @apply outline-none border-green-500;
+    }
+</style>
 {% endblock %}

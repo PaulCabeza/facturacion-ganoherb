@@ -64,45 +64,45 @@ class Customer(models.Model):
     code_id = models.CharField(
         max_length=10,
         verbose_name="Código de distribuidor",
-        blank=True,  # Hacer opcional
-        null=True,   # Hacer opcional
+        blank=True,
+        null=True,
     )
     email = models.EmailField(
-        unique=True,
         verbose_name="Correo electrónico",
+        blank=True,
+        null=True,
+        unique=True,
         error_messages={
             'unique': 'Ya existe un cliente con este correo electrónico',
             'invalid': 'Ingrese un correo electrónico válido',
-            'blank': 'El correo electrónico es requerido',
-            'null': 'El correo electrónico es requerido',
         }
     )
     phone = models.CharField(
         max_length=20,
-        blank=True,
-        verbose_name="Teléfono"
+        verbose_name="Teléfono",
+        error_messages={
+            'blank': 'El teléfono es requerido',
+            'null': 'El teléfono es requerido',
+        }
     )
     address = models.TextField(
-        blank=True,
-        verbose_name="Dirección"
+        verbose_name="Dirección",
+        error_messages={
+            'blank': 'La dirección es requerida',
+            'null': 'La dirección es requerida',
+        }
     )
     nit = models.CharField(
         max_length=20,
         verbose_name="NIT",
-        error_messages={
-            'blank': 'El NIT es requerido',
-            'null': 'El NIT es requerido',
-        }
+        blank=True,
+        null=True,
     )
     registration_number = models.CharField(
         max_length=12,
         verbose_name="Número de registro",
         blank=True,
         null=True,
-        error_messages={
-            'blank': 'El número de registro es requerido',
-            'null': 'El número de registro es requerido',
-        }
     )
 
     class Meta:

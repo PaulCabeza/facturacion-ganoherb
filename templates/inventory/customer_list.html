@@ -29,7 +29,7 @@
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap">{{ customer.name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{% if customer.code_id %}{{ customer.code_id }}{% endif %}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ customer.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{% if customer.email %}{{ customer.email }}{% endif %}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ customer.phone }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{% if customer.registration_number %}{{ customer.registration_number }}{% endif %}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
