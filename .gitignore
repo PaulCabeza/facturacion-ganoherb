@@ -110,9 +110,6 @@ ENV/
 # mypy
 .mypy_cache/
 
-# Django migrations
-migrations/
-
 # Django secret key file
 .env
 
