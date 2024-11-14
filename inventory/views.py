@@ -237,7 +237,7 @@ def invoice_create(request):
         'formset': formset,
         'form_errors': [],
         'is_update': False,
-        'formatted_date': timezone.now().strftime('%Y-%m-%dT%H:%M')
+        'formatted_date': timezone.localtime(timezone.now()).strftime('%Y-%m-%dT%H:%M')
     })
 
 @login_required
