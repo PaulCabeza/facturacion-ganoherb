@@ -7,10 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if invoice.type == 'CCF' %}Comprobante de Crédito Fiscal{% else %}Factura Consumidor Final{% endif %} #{{ invoice.invoice_number }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Reducir el tamaño de la letra al 70% */
+    <style>        
         body {
-            font-size: 70%;
+            font-size: 125%;
         }
         
         @media print {
@@ -25,7 +24,7 @@
             
             body {
                 margin: 0;
-                font-size: 85%;
+                font-size: 125%;
             }
             
             /* Hacer que la tabla use todo el ancho disponible */
@@ -79,13 +78,11 @@
     <br>
     <br>
     <br>
-    <br>
-    <br>
-    <br>
+    <br>    
     <div class="max-w-4xl mx-auto">        
         <div class="grid grid-cols-2 gap-8 mb-8">
             <div>
-                <h2 class="font-bold text-lg mb-2">Información del Cliente</h2>
+                <h2 class="font-bold mb-2">Información del Cliente</h2>
                 <p><span class="font-semibold">Nombre:</span> {{ invoice.customer.name }}</p>
                 <p><span class="font-semibold">Código:</span> {% if invoice.customer.code_id %}{{ invoice.customer.code_id }}{% endif %}</p>
                 <p><span class="font-semibold">NIT:</span> {% if invoice.customer.nit %}{{ invoice.customer.nit }}{% endif %}</p>
@@ -94,7 +91,7 @@
                 <p><span class="font-semibold">N° Registro:</span> {% if invoice.customer.registration_number %}{{ invoice.customer.registration_number }}{% endif %}</p>
             </div>
             <div>
-                <h2 class="font-bold text-lg mb-2">Información de la Factura</h2>
+                <h2 class="font-bold mb-2">Información de la Factura</h2>
                 <p><span class="font-semibold">Número:</span> {{ invoice.invoice_number }}</p>
                 <p><span class="font-semibold">Fecha:</span> {{ invoice.date|date:"d/m/Y H:i" }}</p>
                 <p><span class="font-semibold">Tipo:</span> {% if invoice.type == 'CCF' %}Credito Fiscal{% else %}Consumidor Final{% endif %}</p>
