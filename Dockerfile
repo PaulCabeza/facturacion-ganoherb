@@ -1,5 +1,9 @@
-# Use Python 3.11 slim image
-FROM python:3.11-slim
+# Use Python 3.11 slim image específicamente
+FROM python:3.11.7-slim
+
+# Desactivar mise explícitamente
+ENV MISE_DISABLE=1
+ENV MISE_PYTHON_DEFAULT_PACKAGES_FILE=""
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1

@@ -10,6 +10,7 @@ console_command = '/app/manage.py shell'
 [build]
   # Forzar a usar solo el Dockerfile, sin detección automática
   skip_remote_builder = false
+  dockerfile = "Dockerfile"
 
 [deploy]
   release_command = 'python manage.py migrate --noinput'
@@ -19,6 +20,7 @@ console_command = '/app/manage.py shell'
   PYTHONPATH = '/app'
   # Desactivar mise explícitamente
   MISE_DISABLE = '1'
+  MISE_PYTHON_DEFAULT_PACKAGES_FILE = ''
 
 [processes]
   app = 'gunicorn ganoherb_inventory_billing.wsgi:application --bind 0.0.0.0:8000 --workers 1 --max-requests 1000 --max-requests-jitter 100 --timeout 120'
