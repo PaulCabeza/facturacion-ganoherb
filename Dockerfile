@@ -39,4 +39,4 @@ USER app
 EXPOSE 8000
 
 # Run the application
-CMD ["gunicorn", "ganoherb_inventory_billing.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--max-requests", "1000", "--max-requests-jitter", "100", "--timeout", "120"] 
+CMD ["gunicorn", "ganoherb_inventory_billing.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--max-requests", "1000", "--max-requests-jitter", "100", "--timeout", "120"]
