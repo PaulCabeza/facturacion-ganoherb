@@ -1,0 +1,28 @@
+# Archivos que pueden causar problemas con mise
+.tool-versions*
+.python-version*
+.mise*
+mise.toml
+.mise.toml
+
+# Git
+.git/
+.gitignore
+
+# Desarrollo local
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log 
