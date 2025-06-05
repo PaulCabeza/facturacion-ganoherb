@@ -33,12 +33,13 @@ console_command = '/app/manage.py shell'
   min_machines_running = 1
   processes = ['app']
 
-  [[http_service.checks]]
-    interval = '30s'
-    timeout = '5s'
-    grace_period = '10s'
-    method = 'GET'
-    path = '/'
+  # Health check deshabilitado temporalmente
+  # [[http_service.checks]]
+  #   interval = '30s'
+  #   timeout = '5s'
+  #   grace_period = '10s'
+  #   method = 'GET'
+  #   path = '/'
 
 [[vm]]
   cpu_kind = 'shared'

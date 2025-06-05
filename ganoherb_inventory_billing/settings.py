@@ -29,7 +29,23 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 # Updated ALLOWED_HOSTS for Fly.io
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default=['*.fly.dev', '45.33.14.154', 'localhost', '127.0.0.1', 'facturacion-ganoherb.site'], cast=Csv())
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS', 
+    default=[
+        '*.fly.dev', 
+        'localhost', 
+        '127.0.0.1', 
+        'facturacion-ganoherb.site',
+        'facturacion-ganoherb-withered-wind-2121.fly.dev',
+        # IPs internas de Fly.io para health checks
+        '172.19.11.98',
+        '172.17.0.1',
+        '10.0.0.0/8',
+        '172.16.0.0/12',
+        '192.168.0.0/16'
+    ], 
+    cast=Csv()
+)
 
 # Add these new settings
 CSRF_TRUSTED_ORIGINS = [
